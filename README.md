@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ascendra Workspaces
 
-## Getting Started
+Developer machine management dashboard — take-home assignment.
 
-First, run the development server:
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 15 (App Router) |
+| Language | TypeScript |
+| Styling | TailwindCSS v4 |
+| Component library | shadcn/ui |
+| Data fetching | TanStack Query v5 |
+| Linting | ESLint (Next.js config) |
+| Formatting | Prettier + prettier-plugin-tailwindcss |
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  app/
+    api/                     # Mock backend — Next.js Route Handlers
+      developer/machines/    # GET /api/developer/machines
+      admin/fleet/           # GET /api/admin/fleet
+      admin/vms/             # GET /api/admin/vms
+      admin/templates/       # GET /api/admin/templates
+  types/
+    index.ts                 # All domain types (VM, VMTemplate, User, Policy, FleetUtilization)
+  mocks/
+    users.ts                 # 3 users (2 engineers, 1 admin)
+    templates.ts             # 3 VM templates (small / medium / large)
+    vms.ts                   # 7 VMs across 3 owners, mixed statuses
+    fleet.ts                 # Fleet-wide utilization with 24h trend data
+  lib/
+    api/
+      client.ts              # apiFetch() — typed fetch wrapper with error handling
+      developer.ts           # getDeveloperMachines()
+      admin.ts               # getFleetOverview(), getAllVms(), getTemplates()
+    utils/
+      delay.ts               # simulateDelay() — artificial network latency
+    utils.ts                 # cn() helper (from shadcn)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Mock backend
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+All data lives in `src/mocks/`. The API routes in `src/app/api/` serve that data via Next.js Route Handlers — no external server needed.
 
-## Deploy on Vercel
+Each route:
+1. Calls `simulateDelay()` to add 500–1000ms of artificial latency
+2. Returns `{ data, meta: { timestamp, count? } }` — a consistent envelope for future extensibility
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Endpoints
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Method | Path | Returns |
+|---|---|---|
+| GET | `/api/developer/machines` | `ApiResponse<VM[]>` — VMs owned by the current user |
+| GET | `/api/admin/fleet` | `ApiResponse<FleetUtilization>` — aggregate metrics + 24h trend |
+| GET | `/api/admin/vms` | `ApiResponse<VM[]>` — all VMs across all users |
+| GET | `/api/admin/templates` | `ApiResponse<VMTemplate[]>` — available VM templates |
+
+The current user is hardcoded to `CURRENT_USER_ID = "usr-001"` (Alice Chen) in `src/mocks/users.ts`.
+
+## Environment variables
+
+Copy `.env.example` to `.env.local` (already done):
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:3000
+```
+
+## What's next
+
+- [ ] Route groups `(developer)` and `(admin)` with layouts and navigation
+- [ ] `Providers` wrapper for TanStack Query (`QueryClientProvider`)
+- [ ] Query key factory (`src/lib/query/keys.ts`)
+- [ ] `useSuspenseQuery` hooks for each endpoint
+- [ ] Server-side prefetching with `HydrationBoundary` in page components
+- [ ] Developer view: My Machines list, VM detail, lifecycle controls
+- [ ] Admin view: Fleet overview, VM inventory, utilization charts, templates

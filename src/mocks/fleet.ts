@@ -1,0 +1,52 @@
+import type { FleetUtilization } from "@/types";
+import { MOCK_VMS } from "./vms";
+
+const UTILIZATION_TREND: FleetUtilization["utilizationTrend"] = [
+  { timestamp: "2025-06-09T12:00:00Z", cpuPercent: 28, memoryPercent: 41, runningVms: 3 },
+  { timestamp: "2025-06-09T13:00:00Z", cpuPercent: 31, memoryPercent: 43, runningVms: 3 },
+  { timestamp: "2025-06-09T14:00:00Z", cpuPercent: 45, memoryPercent: 52, runningVms: 4 },
+  { timestamp: "2025-06-09T15:00:00Z", cpuPercent: 52, memoryPercent: 58, runningVms: 4 },
+  { timestamp: "2025-06-09T16:00:00Z", cpuPercent: 61, memoryPercent: 63, runningVms: 5 },
+  { timestamp: "2025-06-09T17:00:00Z", cpuPercent: 58, memoryPercent: 61, runningVms: 5 },
+  { timestamp: "2025-06-09T18:00:00Z", cpuPercent: 39, memoryPercent: 49, runningVms: 4 },
+  { timestamp: "2025-06-09T19:00:00Z", cpuPercent: 22, memoryPercent: 38, runningVms: 3 },
+  { timestamp: "2025-06-09T20:00:00Z", cpuPercent: 15, memoryPercent: 33, runningVms: 2 },
+  { timestamp: "2025-06-09T21:00:00Z", cpuPercent: 11, memoryPercent: 28, runningVms: 2 },
+  { timestamp: "2025-06-09T22:00:00Z", cpuPercent: 9, memoryPercent: 25, runningVms: 2 },
+  { timestamp: "2025-06-09T23:00:00Z", cpuPercent: 7, memoryPercent: 22, runningVms: 1 },
+  { timestamp: "2025-06-10T00:00:00Z", cpuPercent: 6, memoryPercent: 20, runningVms: 1 },
+  { timestamp: "2025-06-10T01:00:00Z", cpuPercent: 5, memoryPercent: 19, runningVms: 1 },
+  { timestamp: "2025-06-10T02:00:00Z", cpuPercent: 5, memoryPercent: 18, runningVms: 1 },
+  { timestamp: "2025-06-10T03:00:00Z", cpuPercent: 4, memoryPercent: 17, runningVms: 1 },
+  { timestamp: "2025-06-10T04:00:00Z", cpuPercent: 6, memoryPercent: 19, runningVms: 1 },
+  { timestamp: "2025-06-10T05:00:00Z", cpuPercent: 12, memoryPercent: 24, runningVms: 2 },
+  { timestamp: "2025-06-10T06:00:00Z", cpuPercent: 19, memoryPercent: 31, runningVms: 2 },
+  { timestamp: "2025-06-10T07:00:00Z", cpuPercent: 27, memoryPercent: 39, runningVms: 3 },
+  { timestamp: "2025-06-10T08:00:00Z", cpuPercent: 33, memoryPercent: 44, runningVms: 4 },
+  { timestamp: "2025-06-10T09:00:00Z", cpuPercent: 44, memoryPercent: 52, runningVms: 5 },
+  { timestamp: "2025-06-10T10:00:00Z", cpuPercent: 51, memoryPercent: 57, runningVms: 5 },
+  { timestamp: "2025-06-10T11:00:00Z", cpuPercent: 48, memoryPercent: 55, runningVms: 5 },
+];
+
+export const MOCK_FLEET_UTILIZATION: FleetUtilization = {
+  period: "last-24-hours",
+  totalVms: 7,
+  runningVms: 4,
+  stoppedVms: 1,
+  totalUsers: 3,
+  avgCpuUtilizationPercent: 28,
+  peakCpuUtilizationPercent: 71,
+  avgMemoryUtilizationPercent: 41,
+  peakMemoryUtilizationPercent: 78,
+  totalHourlyCost: 1.94,
+  monthToDateCost: 847.2,
+  projectedMonthlyCost: 1397.0,
+  utilizationTrend: UTILIZATION_TREND,
+  vmMetrics: MOCK_VMS.map((vm) => ({
+    vmId: vm.id,
+    cpuPercent: vm.cpuUsagePercent,
+    memoryPercent: vm.memoryUsagePercent,
+    diskPercent: vm.diskUsagePercent,
+    status: vm.status,
+  })),
+};
