@@ -2,6 +2,7 @@
 
 import { useTransition, useState } from "react";
 import { signIn } from "@/lib/auth-actions";
+import { Button } from "@/components/ui/button";
 
 type Role = "engineer" | "admin";
 
@@ -30,14 +31,15 @@ export function RoleSelector() {
   return (
     <div className="space-y-3">
       {ROLES.map((role) => (
-        <button
+        <Button
           key={role.value}
+          variant="outline"
           onClick={() => handleSelect(role.value)}
           disabled={pending}
-          className="w-full text-left rounded-lg border bg-card px-4 py-3.5 hover:bg-accent transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full h-auto justify-start px-4 py-3.5"
         >
-          <div className="flex items-center justify-between gap-4">
-            <div>
+          <div className="flex items-center justify-between gap-4 w-full">
+            <div className="text-left">
               <div className="font-medium">{role.label}</div>
               <small className="text-muted-foreground mt-0.5 block">{role.description}</small>
             </div>
@@ -45,7 +47,7 @@ export function RoleSelector() {
               <div className="size-4 shrink-0 rounded-full border-2 border-current border-t-transparent animate-spin" />
             )}
           </div>
-        </button>
+        </Button>
       ))}
     </div>
   );
