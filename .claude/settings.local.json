@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git stash:*)",
+      "Bash(pnpm exec tsc:*)",
+      "Bash(xargs -I {} bash -c \"echo ''=== {} ==='' && wc -l {}\")",
+      "mcp__context7__query-docs",
+      "Bash(npx eslint *)"
+    ]
+  }
+}
