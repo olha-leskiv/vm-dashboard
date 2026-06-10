@@ -1,5 +1,9 @@
-export default function RootPage() {
-  return <div className="flex flex-col items-center justify-center h-screen">
-    <h1 className="text-4xl font-bold">Hello World</h1>
-  </div>;
+import { redirect } from "next/navigation";
+import { getAuthRole } from "@/lib/auth";
+
+export default async function RootPage() {
+  const role = await getAuthRole();
+  if (role === "engineer") redirect("/developer/machines");
+  if (role === "admin") redirect("/admin/overview");
+  redirect("/sign-in");
 }
