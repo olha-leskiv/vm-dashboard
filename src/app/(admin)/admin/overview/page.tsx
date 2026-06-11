@@ -1,10 +1,5 @@
-import { Suspense } from "react";
-import { OverviewDashboard, OverviewSkeleton } from "@/components/overview/overview-dashboard";
-
+// The layout.tsx at this segment composes all parallel route slots.
+// This page provides the implicit `children` slot — nothing to render here.
 export default function AdminOverviewPage() {
-  return (
-    <Suspense fallback={<OverviewSkeleton />}>
-      <OverviewDashboard />
-    </Suspense>
-  );
+  return null;
 }
