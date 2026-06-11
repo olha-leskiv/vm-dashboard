@@ -1,12 +1,13 @@
 import { Sidebar } from "@/components/layout/sidebar";
+import type { NavItem } from "@/components/layout/sidebar";
 import { getAuthUser } from "@/lib/auth";
 
-const NAV_ITEMS = [
-  { label: "Overview", href: "/admin/overview" },
-  { label: "Fleet", href: "/admin/fleet" },
-  { label: "Templates", href: "/admin/templates" },
-  { label: "Policies", href: "/admin/policies" },
-  { label: "My Machines", href: "/admin/machines" },
+const NAV_ITEMS: NavItem[] = [
+  { label: "Overview", href: "/admin/overview", icon: "LayoutDashboard" },
+  { label: "Fleet", href: "/admin/fleet", icon: "Server" },
+  { label: "Templates", href: "/admin/templates", icon: "Layers" },
+  { label: "Policies", href: "/admin/policies", icon: "ShieldCheck" },
+  { label: "My Machines", href: "/admin/machines", icon: "Monitor" },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
