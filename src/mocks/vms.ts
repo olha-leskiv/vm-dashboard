@@ -1,112 +1,97 @@
-import type { VM } from "@/types";
+import type { VM, VMStatus } from "@/types";
+import { MOCK_USERS } from "./users";
 
-export const MOCK_VMS: VM[] = [
-  // Alice's VMs (usr-001)
-  {
-    id: "vm-001",
-    name: "alice-dev-main",
-    ownerId: "usr-001",
-    templateId: "tpl-medium",
-    status: "running",
-    region: "us-east-1",
-    createdAt: "2024-11-01T09:00:00Z",
-    startedAt: "2025-06-09T08:15:00Z",
-    lastActiveAt: "2025-06-10T11:30:00Z",
-    cpuUsagePercent: 42,
-    memoryUsagePercent: 61,
-    diskUsagePercent: 38,
-    hourlyCost: 0.24,
-  },
-  {
-    id: "vm-002",
-    name: "alice-api-test",
-    ownerId: "usr-001",
-    templateId: "tpl-small",
-    status: "stopped",
-    region: "us-east-1",
-    createdAt: "2024-12-10T14:00:00Z",
-    startedAt: null,
-    lastActiveAt: "2025-06-08T17:00:00Z",
-    cpuUsagePercent: 0,
-    memoryUsagePercent: 0,
-    diskUsagePercent: 22,
-    hourlyCost: 0.09,
-  },
-  {
-    id: "vm-003",
-    name: "alice-ml-exp",
-    ownerId: "usr-001",
-    templateId: "tpl-large",
-    status: "starting",
-    region: "us-west-2",
-    createdAt: "2025-01-15T10:00:00Z",
-    startedAt: null,
-    lastActiveAt: "2025-06-10T11:00:00Z",
-    cpuUsagePercent: 5,
-    memoryUsagePercent: 12,
-    diskUsagePercent: 55,
-    hourlyCost: 0.64,
-  },
-  // Bob's VMs (usr-002)
-  {
-    id: "vm-004",
-    name: "bob-frontend",
-    ownerId: "usr-002",
-    templateId: "tpl-small",
-    status: "running",
-    region: "eu-west-1",
-    createdAt: "2025-02-20T08:00:00Z",
-    startedAt: "2025-06-10T09:00:00Z",
-    lastActiveAt: "2025-06-10T11:45:00Z",
-    cpuUsagePercent: 18,
-    memoryUsagePercent: 34,
-    diskUsagePercent: 19,
-    hourlyCost: 0.09,
-  },
-  {
-    id: "vm-005",
-    name: "bob-backend",
-    ownerId: "usr-002",
-    templateId: "tpl-medium",
-    status: "running",
-    region: "eu-west-1",
-    createdAt: "2025-03-05T11:00:00Z",
-    startedAt: "2025-06-10T09:05:00Z",
-    lastActiveAt: "2025-06-10T11:50:00Z",
-    cpuUsagePercent: 71,
-    memoryUsagePercent: 78,
-    diskUsagePercent: 44,
-    hourlyCost: 0.24,
-  },
-  // Carol's VMs (usr-003)
-  {
-    id: "vm-006",
-    name: "carol-infra-tools",
-    ownerId: "usr-003",
-    templateId: "tpl-medium",
-    status: "running",
-    region: "us-east-1",
-    createdAt: "2024-10-01T07:00:00Z",
-    startedAt: "2025-06-09T07:00:00Z",
-    lastActiveAt: "2025-06-10T10:00:00Z",
-    cpuUsagePercent: 8,
-    memoryUsagePercent: 22,
-    diskUsagePercent: 31,
-    hourlyCost: 0.24,
-  },
-  {
-    id: "vm-007",
-    name: "carol-staging",
-    ownerId: "usr-003",
-    templateId: "tpl-large",
-    status: "error",
-    region: "us-east-1",
-    createdAt: "2025-04-01T12:00:00Z",
-    startedAt: null,
-    lastActiveAt: "2025-06-09T16:30:00Z",
-    cpuUsagePercent: 0,
-    memoryUsagePercent: 0,
-    diskUsagePercent: 67,
-    hourlyCost: 0.64,
-  },
+const REGIONS = ["us-east-1", "us-west-2", "eu-west-1", "ap-southeast-1"];
+const TEMPLATES = ["tpl-small", "tpl-medium", "tpl-large"];
+const HOURLY_COSTS: Record<string, number> = {
+  "tpl-small": 0.09,
+  "tpl-medium": 0.24,
+  "tpl-large": 0.64,
+};
+const VM_NAME_SUFFIXES = [
+  "dev-main", "api-svc", "ml-exp", "frontend", "backend",
+  "staging", "build-bot", "test-env", "analytics", "infra-tools",
+  "data-proc", "sandbox", "preview", "compiler", "research",
 ];
+
+function pad(n: number, digits = 3): string {
+  return String(n).padStart(digits, "0");
+}
+
+function isoHoursAgo(hoursAgo: number): string {
+  const d = new Date("2025-06-10T12:00:00Z");
+  d.setTime(d.getTime() - hoursAgo * 3_600_000);
+  return d.toISOString().replace(/\.\d{3}Z$/, "Z");
+}
+
+function isoDaysAgo(daysAgo: number): string {
+  return isoHoursAgo(daysAgo * 24);
+}
+
+function genVms(): VM[] {
+  // Build a flat owner-id list matching each user's vmCount (total = 257)
+  const ownerIds: string[] = [];
+  for (const user of MOCK_USERS) {
+    for (let v = 0; v < user.vmCount; v++) ownerIds.push(user.id);
+  }
+
+  const userById = Object.fromEntries(MOCK_USERS.map((u) => [u.id, u]));
+
+  return ownerIds.map((ownerId, i) => {
+    const vmNum = i + 1;
+    const userFirstName = userById[ownerId].name.split(" ")[0].toLowerCase();
+    const nameSuffix = VM_NAME_SUFFIXES[i % VM_NAME_SUFFIXES.length];
+    const templateId = TEMPLATES[i % 3];
+    const region = REGIONS[i % 4];
+    const hourlyCost = HOURLY_COSTS[templateId];
+
+    // Status buckets: 0-183 running, 184-241 stopped, 242-256 starting
+    let status: VMStatus;
+    let cpuUsagePercent: number;
+    let memoryUsagePercent: number;
+    let startedAt: string | null;
+    let lastActiveAt: string;
+
+    if (i < 184) {
+      status = "running";
+      // Pseudo-random CPU 5–95% cycling through all values (17 is coprime to 91)
+      cpuUsagePercent = ((i * 17 + 13) % 91) + 5;
+      memoryUsagePercent = Math.min(95, Math.max(10, Math.round(cpuUsagePercent * 0.85 + (i * 7 % 15) - 5)));
+      startedAt = isoHoursAgo((i * 3 + 1) % 47 + 1);
+      lastActiveAt = isoHoursAgo(i % 3);
+    } else if (i < 242) {
+      status = "stopped";
+      cpuUsagePercent = 0;
+      memoryUsagePercent = 0;
+      startedAt = null;
+      lastActiveAt = isoHoursAgo((i * 5) % 120 + 24);
+    } else {
+      status = "starting";
+      cpuUsagePercent = (i * 3) % 7 + 2;
+      memoryUsagePercent = (i * 5) % 12 + 5;
+      startedAt = null;
+      lastActiveAt = isoHoursAgo(1);
+    }
+
+    const diskUsagePercent = (i * 11 + 7) % 70 + 10;
+    const daysAgo = (i * 7 + 30) % 365 + 1;
+
+    return {
+      id: `vm-${pad(vmNum)}`,
+      name: `${userFirstName}-${nameSuffix}`,
+      ownerId,
+      templateId,
+      status,
+      region,
+      createdAt: isoDaysAgo(daysAgo),
+      startedAt,
+      lastActiveAt,
+      cpuUsagePercent,
+      memoryUsagePercent,
+      diskUsagePercent,
+      hourlyCost,
+    };
+  });
+}
+
+export const MOCK_VMS = genVms();

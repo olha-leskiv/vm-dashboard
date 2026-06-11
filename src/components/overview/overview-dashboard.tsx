@@ -250,10 +250,10 @@ export function OverviewDashboard() {
 
       {/* ── KPI row ────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-7 gap-3">
-        <KpiCard label="Total VMs" value={fleet.totalVms} />
-        <KpiCard label="Running VMs" value={fleet.runningVms} valueClass="text-emerald-400" />
+        <KpiCard label="Total" value={fleet.totalVms} />
+        <KpiCard label="Running" value={fleet.runningVms} valueClass="text-emerald-400" />
         <KpiCard label="Starting" value={startingCount} valueClass="text-amber-400" />
-        <KpiCard label="Stopped VMs" value={fleet.stoppedVms} valueClass="text-muted-foreground" />
+        <KpiCard label="Idle" value={fleet.stoppedVms} valueClass="text-muted-foreground" />
         <KpiCard label="Total Users" value={fleet.totalUsers} />
         <KpiCard
           label="Avg CPU"
