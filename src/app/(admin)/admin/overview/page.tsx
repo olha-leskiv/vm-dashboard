@@ -1,3 +1,10 @@
+import { Suspense } from "react";
+import { OverviewDashboard, OverviewSkeleton } from "@/components/overview/overview-dashboard";
+
 export default function AdminOverviewPage() {
-  return <div>Overview</div>;
+  return (
+    <Suspense fallback={<OverviewSkeleton />}>
+      <OverviewDashboard />
+    </Suspense>
+  );
 }

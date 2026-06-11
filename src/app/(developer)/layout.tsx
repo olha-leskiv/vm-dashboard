@@ -8,7 +8,7 @@ export default async function DeveloperLayout({ children }: { children: React.Re
   return (
     <div className="flex h-screen">
       <Sidebar navItems={NAV_ITEMS} user={user} />
-      <main className="flex-1 overflow-auto">{children}</main>
+      <main className="flex-1 overflow-auto p-6">{children}</main>
     </div>
   );
 }
