@@ -71,7 +71,7 @@ function StatusBadge({ status }: { status: VMStatus }) {
 
 // ─── sort types ───────────────────────────────────────────────────────────────
 
-type SortField =
+export type SortField =
   | "name"
   | "ownerId"
   | "templateId"
@@ -83,7 +83,7 @@ type SortField =
   | "lastActiveAt"
   | "hourlyCost";
 
-type SortDir = "asc" | "desc";
+export type SortDir = "asc" | "desc";
 
 // ─── data helpers ─────────────────────────────────────────────────────────────
 
@@ -317,16 +317,26 @@ export function FleetSkeleton() {
 
 // ─── fleet dashboard ──────────────────────────────────────────────────────────
 
-export function FleetDashboard() {
+interface FleetDashboardProps {
+  initialStatus?: string;
+  initialSortField?: SortField;
+  initialSortDir?: SortDir;
+}
+
+export function FleetDashboard({
+  initialStatus = "all",
+  initialSortField = "name",
+  initialSortDir = "asc",
+}: FleetDashboardProps = {}) {
   const { data: vmsRes } = useAllVms();
   const vms = vmsRes.data;
 
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [templateFilter, setTemplateFilter] = useState("all");
   const [ownerFilter, setOwnerFilter] = useState("all");
-  const [sortField, setSortField] = useState<SortField>("name");
-  const [sortDir, setSortDir] = useState<SortDir>("asc");
+  const [sortField, setSortField] = useState<SortField>(initialSortField);
+  const [sortDir, setSortDir] = useState<SortDir>(initialSortDir);
   const [selectedVm, setSelectedVm] = useState<VM | null>(null);
 
   function handleSort(field: SortField) {

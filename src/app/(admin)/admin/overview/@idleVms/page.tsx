@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cachedGetFleetOverview, cachedGetAllVms } from "@/lib/api/cached";
 import { MOCK_USERS } from "@/mocks/users";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,7 +42,15 @@ export default async function IdleVmsPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Idle VMs</CardTitle>
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle>Idle VMs</CardTitle>
+          <Link
+            href="/admin/fleet?status=stopped"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0"
+          >
+            View all →
+          </Link>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-[1fr_auto_auto] gap-x-3 mb-2">
