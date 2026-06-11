@@ -4,9 +4,10 @@ import { getAuthUser } from "@/lib/auth";
 
 const NAV_ITEMS: NavItem[] = [
   { label: "Overview", href: "/admin/overview", icon: "LayoutDashboard" },
-  { label: "Fleet", href: "/admin/fleet", icon: "Server" },
+  { label: "Virtual Machines", href: "/admin/fleet", icon: "Server" },
   { label: "Templates", href: "/admin/templates", icon: "Layers" },
   { label: "Policies", href: "/admin/policies", icon: "ShieldCheck" },
+  { label: "Users", href: "/admin/users", icon: "Users" },
   { label: "My Machines", href: "/admin/machines", icon: "Monitor" },
 ];
 

@@ -5,6 +5,7 @@ export default function OverviewLayout({
   runningVms,
   hotVms,
   idleVms,
+  actionCenter,
   cost,
 }: {
   children: React.ReactNode;
@@ -13,29 +14,35 @@ export default function OverviewLayout({
   runningVms: React.ReactNode;
   hotVms: React.ReactNode;
   idleVms: React.ReactNode;
+  actionCenter: React.ReactNode;
   cost: React.ReactNode;
 }) {
   return (
     <div className="space-y-5">
-      <div>
+      <div className="flex items-start justify-between gap-4">
         <h1>Overview</h1>
-        <p className="text-muted-foreground mt-0.5">Real-time summary of your infrastructure.</p>
+        <p className="text-xs text-muted-foreground shrink-0 mt-1.5">
+          Updated {new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
+        </p>
       </div>
-
-      {/* KPI row — each card streams independently */}
-      {kpis}
-
-      {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {utilization}
-        {runningVms}
+        {kpis}
+        {cost}
       </div>
 
-      {/* Distribution + cost row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="col-span-2">
+          {utilization}
+        </div>
+        <div>
+          {runningVms}
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {hotVms}
         {idleVms}
-        {cost}
+        {actionCenter}
       </div>
     </div>
   );

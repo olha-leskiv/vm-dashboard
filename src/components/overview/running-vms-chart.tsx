@@ -78,13 +78,13 @@ export function RunningVmsChart({ trend }: { trend: UtilizationTrendPoint[] }) {
             />
             <Tooltip content={<VmsTooltip />} />
             <Area
-              type="monotone"
+              type="linear"
               dataKey="Running"
               stroke="#34d399"
               strokeWidth={2}
               fill="url(#runningGrad)"
-              dot={false}
-              activeDot={{ r: 4, strokeWidth: 0 }}
+              dot={{ r: 4, fill: "#34d399", stroke: "rgba(0,0,0,0.4)", strokeWidth: 1 }}
+              activeDot={{ r: 5, fill: "#34d399", strokeWidth: 0 }}
             />
           </AreaChart>
         </ResponsiveContainer>

@@ -122,20 +122,30 @@ export function UtilizationChart({ trend }: { trend: UtilizationTrendPoint[] }) 
               />
               <Tooltip content={<ChartTooltip />} />
               <Line
-                type="monotone"
+                type="linear"
                 dataKey="CPU"
                 stroke="#38bdf8"
                 strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4, strokeWidth: 0 }}
+                dot={{
+                  r: 4,
+                  fill: "#38bdf8",
+                  stroke: "rgba(0,0,0,0.4)",
+                  strokeWidth: 1,
+                }}
+                activeDot={{ r: 5, fill: "#38bdf8", strokeWidth: 0 }}
               />
               <Line
-                type="monotone"
+                type="linear"
                 dataKey="Memory"
                 stroke="#a78bfa"
                 strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4, strokeWidth: 0 }}
+                dot={{
+                  r: 4,
+                  fill: "#a78bfa",
+                  stroke: "rgba(0,0,0,0.4)",
+                  strokeWidth: 1,
+                }}
+                activeDot={{ r: 5, fill: "#a78bfa", strokeWidth: 0 }}
               />
             </LineChart>
           </ResponsiveContainer>

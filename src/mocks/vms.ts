@@ -58,7 +58,9 @@ function genVms(): VM[] {
       cpuUsagePercent = ((i * 17 + 13) % 91) + 5;
       memoryUsagePercent = Math.min(95, Math.max(10, Math.round(cpuUsagePercent * 0.85 + (i * 7 % 15) - 5)));
       startedAt = isoHoursAgo((i * 3 + 1) % 47 + 1);
-      lastActiveAt = isoHoursAgo(i % 3);
+      // Spread of “recent” vs stale last activity for overview idle list (>14 days)
+      lastActiveAt =
+        i % 32 === 0 ? isoDaysAgo(15 + (i % 40)) : isoHoursAgo(i % 3);
     } else if (i < 242) {
       status = "stopped";
       cpuUsagePercent = 0;

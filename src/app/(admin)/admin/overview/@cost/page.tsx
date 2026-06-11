@@ -1,5 +1,6 @@
 import { cachedGetFleetOverview } from "@/lib/api/cached";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 function formatMoney(n: number): string {
   return n.toLocaleString("en-US", {
@@ -32,6 +33,7 @@ export default async function CostPage() {
               {formatMoney(fleet.monthToDateCost)}
             </span>
           </div>
+          <Separator />
           <div className="flex items-center justify-between">
             <div>
               <div className="text-sm text-muted-foreground">Projected Monthly Cost</div>

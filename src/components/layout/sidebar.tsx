@@ -4,16 +4,31 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "@/lib/auth-actions";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Server, Layers, ShieldCheck, Monitor, type LucideIcon } from "lucide-react";
+import {
+  LayoutDashboard,
+  Server,
+  Layers,
+  ShieldCheck,
+  Users,
+  Monitor,
+  type LucideIcon,
+} from "lucide-react";
 import type { User } from "@/types";
 
-export type NavIconName = "LayoutDashboard" | "Server" | "Layers" | "ShieldCheck" | "Monitor";
+export type NavIconName =
+  | "LayoutDashboard"
+  | "Server"
+  | "Layers"
+  | "ShieldCheck"
+  | "Users"
+  | "Monitor";
 
 const ICON_MAP: Record<NavIconName, LucideIcon> = {
   LayoutDashboard,
   Server,
   Layers,
   ShieldCheck,
+  Users,
   Monitor,
 };
 
