@@ -15,6 +15,7 @@ import {
 import { useFleetOverview, useAllVms } from "@/lib/query/hooks";
 import { MOCK_USERS } from "@/mocks/users";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -244,9 +245,7 @@ export function OverviewDashboard() {
   return (
     <div className="space-y-5">
       {/* header */}
-      <div>
-        <h1>Overview</h1>
-      </div>
+      <PageHeader title="Overview" />
 
       {/* ── KPI row ────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-7 gap-3">

@@ -76,10 +76,10 @@ export function ActionCenter({ alerts }: Props) {
         )}
 
         {/* footer actions */}
-        <div className="flex items-center justify-between pt-3 mt-1 border-t border-border/40">
-
-          <Button variant="outline" size="sm" >
-            View All Events
+        <div className="flex items-center justify-between pt-2 mt-1 border-t border-border/40">
+          <span className="text-xs text-muted-foreground">Active alerts</span>
+          <Button variant="ghost" size="xs">
+            View all events
           </Button>
         </div>
       </CardContent>

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { PageHeader } from "@/components/layout/page-header";
 import { cn } from "@/lib/utils";
 
 const ROLE_STYLES = {
@@ -16,10 +17,10 @@ export default function AdminUsersPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Users</h1>
-        <p className="text-muted-foreground text-sm mt-1">Directory of workspace members.</p>
-      </div>
+      <PageHeader
+        title="Users"
+        description="Directory of workspace members."
+      />
 
       <Card>
         <CardHeader className="pb-3">

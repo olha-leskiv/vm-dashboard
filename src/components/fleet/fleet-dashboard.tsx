@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, ChevronUp, ChevronDown, ChevronsUpDown, X } from "lucide-react";
+import Link from "next/link";
+import { Search, ChevronUp, ChevronDown, ChevronsUpDown, X, Plus } from "lucide-react";
 import { useAllVms } from "@/lib/query/hooks";
 import { MOCK_TEMPLATES } from "@/mocks/templates";
 import { MOCK_USERS } from "@/mocks/users";
@@ -25,10 +26,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { VmDrawer } from "@/components/vm-drawer";
+import { PageHeader } from "@/components/layout/page-header";
 import { formatCost, formatRelativeTime, utilizationColor } from "@/lib/utils/format";
 import type { VM, VMStatus } from "@/types";
 import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
+import { VmDrawer } from "@/components/vm-drawer";
+import { ViewDrawer as TemplateViewDrawer } from "@/components/templates/templates-dashboard";
 
 // ─── lookup maps ──────────────────────────────────────────────────────────────
 
@@ -211,6 +215,7 @@ export function FleetDashboard({
   const [sortField, setSortField] = useState<SortField>(initialSortField);
   const [sortDir, setSortDir] = useState<SortDir>(initialSortDir);
   const [selectedVm, setSelectedVm] = useState<VM | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<(typeof MOCK_TEMPLATES)[number] | null>(null);
 
   function handleSort(field: SortField) {
     if (sortField === field) {
@@ -239,13 +244,15 @@ export function FleetDashboard({
   return (
     <>
       <div className="space-y-4">
-        {/* header */}
-        <div>
-          <h1>Fleet</h1>
-          <p className="text-muted-foreground mt-0.5">
-            All virtual machines across the workspace.
-          </p>
-        </div>
+        <PageHeader
+          title="Virtual Machines"
+          actions={
+            <Button size="sm" className="gap-1.5 shrink-0">
+              <Plus className="size-4" />
+              Add Virtual Machine
+            </Button>
+          }
+        />
 
         {/* ── filters ────────────────────────────────────────────────────── */}
         <div className="flex flex-wrap items-center gap-2">
@@ -324,78 +331,95 @@ export function FleetDashboard({
         </div>
 
         {/* ── table ──────────────────────────────────────────────────────── */}
-        <div className="rounded-xl border border-border overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <SortHead field="name" {...sortProps}>Name</SortHead>
-                <SortHead field="ownerId" {...sortProps}>Owner</SortHead>
-                <SortHead field="templateId" {...sortProps}>Template</SortHead>
-                <SortHead field="status" {...sortProps}>Status</SortHead>
-                <SortHead field="cpuUsagePercent" {...sortProps}>CPU</SortHead>
-                <SortHead field="memoryUsagePercent" {...sortProps}>Memory</SortHead>
-                <SortHead field="diskUsagePercent" {...sortProps}>Disk</SortHead>
-                <SortHead field="region" {...sortProps}>Region</SortHead>
-                <SortHead field="lastActiveAt" {...sortProps}>Last Active</SortHead>
-                <SortHead field="hourlyCost" {...sortProps} className="text-right">Cost</SortHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={10} className="h-32 text-center text-muted-foreground">
-                    {hasFilters
-                      ? "No VMs match the current filters."
-                      : "No virtual machines found."}
-                  </TableCell>
+        <Card>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <SortHead field="name" {...sortProps}>Name</SortHead>
+                  <SortHead field="ownerId" {...sortProps}>Owner</SortHead>
+                  <SortHead field="templateId" {...sortProps}>Template</SortHead>
+                  <SortHead field="status" {...sortProps}>Status</SortHead>
+                  <SortHead field="cpuUsagePercent" {...sortProps}>CPU</SortHead>
+                  <SortHead field="memoryUsagePercent" {...sortProps}>Memory</SortHead>
+                  <SortHead field="diskUsagePercent" {...sortProps}>Disk</SortHead>
+                  <SortHead field="region" {...sortProps}>Region</SortHead>
+                  <SortHead field="lastActiveAt" {...sortProps}>Last Active</SortHead>
+                  <SortHead field="hourlyCost" {...sortProps} className="text-right">Cost</SortHead>
                 </TableRow>
-              ) : (
-                filtered.map((vm) => (
-                  <TableRow
-                    key={vm.id}
-                    onClick={() => setSelectedVm(vm)}
-                    className={cn("cursor-pointer", rowHighlight(vm))}
-                  >
-                    <TableCell>
-                      <div className="flex items-center gap-2 min-w-0">
-                        <VmStatusIconChip status={vm.status} size="compact" />
-                        <span className="font-mono font-medium truncate">{vm.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground text-xs">
-                      {USER_MAP[vm.ownerId] ?? vm.ownerId}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground text-xs">
-                      {TEMPLATE_MAP[vm.templateId]?.name ?? vm.templateId}
-                    </TableCell>
-                    <TableCell>
-                      <StatusBadge status={vm.status} />
-                    </TableCell>
-                    <TableCell>
-                      <MiniBar value={vm.cpuUsagePercent} />
-                    </TableCell>
-                    <TableCell>
-                      <MiniBar value={vm.memoryUsagePercent} />
-                    </TableCell>
-                    <TableCell>
-                      <MiniBar value={vm.diskUsagePercent} />
-                    </TableCell>
-                    <TableCell className="text-muted-foreground text-xs">{vm.region}</TableCell>
-                    <TableCell className="text-muted-foreground text-xs">
-                      {formatRelativeTime(vm.lastActiveAt)}
-                    </TableCell>
-                    <TableCell className="text-right text-muted-foreground text-xs tabular-nums">
-                      {formatCost(vm.hourlyCost)}
+              </TableHeader>
+              <TableBody>
+                {filtered.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={10} className="h-32 text-center text-muted-foreground">
+                      {hasFilters
+                        ? "No VMs match the current filters."
+                        : "No virtual machines found."}
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+                ) : (
+                  filtered.map((vm) => (
+                    <TableRow
+                      key={vm.id}
+                      onClick={() => setSelectedVm(vm)}
+                      className={cn("cursor-pointer", rowHighlight(vm))}
+                    >
+                      <TableCell>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <VmStatusIconChip status={vm.status} size="compact" />
+                          <span className="font-mono font-medium truncate">{vm.name}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Link
+                          href={`/admin/users/${vm.ownerId}`}
+                          className="text-xs text-muted-foreground hover:text-foreground hover:underline underline-offset-2 transition-colors whitespace-nowrap"
+                        >
+                          {USER_MAP[vm.ownerId] ?? vm.ownerId}
+                        </Link>
+                      </TableCell>
+                      <TableCell onClick={(e) => { e.stopPropagation(); setSelectedTemplate(TEMPLATE_MAP[vm.templateId] ?? null); }}>
+                        <button className="text-xs text-muted-foreground hover:text-foreground hover:underline underline-offset-2 transition-colors whitespace-nowrap cursor-pointer text-left">
+                          {TEMPLATE_MAP[vm.templateId]?.name ?? vm.templateId}
+                        </button>
+                      </TableCell>
+                      <TableCell>
+                        <StatusBadge status={vm.status} />
+                      </TableCell>
+                      <TableCell>
+                        <MiniBar value={vm.cpuUsagePercent} />
+                      </TableCell>
+                      <TableCell>
+                        <MiniBar value={vm.memoryUsagePercent} />
+                      </TableCell>
+                      <TableCell>
+                        <MiniBar value={vm.diskUsagePercent} />
+                      </TableCell>
+                      <TableCell className="text-muted-foreground text-xs">{vm.region}</TableCell>
+                      <TableCell className="text-muted-foreground text-xs">
+                        {formatRelativeTime(vm.lastActiveAt)}
+                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground text-xs tabular-nums">
+                        {formatCost(vm.hourlyCost)}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
 
-      <VmDrawer vm={selectedVm} ownerName={selectedVm ? (USER_MAP[selectedVm.ownerId] ?? selectedVm.ownerId) : null} onClose={() => setSelectedVm(null)} />
+      <VmDrawer
+        vm={selectedVm}
+        ownerName={selectedVm ? (USER_MAP[selectedVm.ownerId] ?? selectedVm.ownerId) : null}
+        onClose={() => setSelectedVm(null)}
+      />
+      <TemplateViewDrawer
+        template={selectedTemplate}
+        onClose={() => setSelectedTemplate(null)}
+      />
     </>
   );
 }

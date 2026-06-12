@@ -2,6 +2,8 @@
 
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Pencil } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -153,6 +155,13 @@ export function VmDrawer({ vm, ownerName, onClose }: VmDrawerProps) {
                 </h4>
                 <MetaRow label="Hourly rate" value={<span className="font-mono">{formatCost(vm.hourlyCost)}</span>} />
               </section>
+            </div>
+
+            <div className="px-4 pb-4 pt-2 mt-auto border-t border-border">
+              <Button size="sm" variant="outline" className="w-full gap-1.5">
+                <Pencil className="size-3.5" />
+                Edit VM
+              </Button>
             </div>
           </>
         )}

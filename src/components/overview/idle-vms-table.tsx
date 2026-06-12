@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { VmStatusIconChip } from "@/components/overview/vm-status-icon-chip";
+import { Button } from "@/components/ui/button";
 import { VmDrawer } from "@/components/vm-drawer";
 import { formatRelativeTime } from "@/lib/utils/format";
 import type { VM } from "@/types";
@@ -20,6 +22,7 @@ interface Props {
 }
 
 export function IdleVmsTable({ rows }: Props) {
+  const router = useRouter();
   const [selectedVm, setSelectedVm] = useState<VM | null>(null);
   const selectedOwnerName = selectedVm
     ? (rows.find((r) => r.vm.id === selectedVm.id)?.ownerName ?? selectedVm.ownerId)
@@ -29,17 +32,9 @@ export function IdleVmsTable({ rows }: Props) {
     <>
       <Card className="h-full">
         <CardHeader>
-          <div className="flex items-center justify-between gap-2">
-            <CardTitle>Idle VMs</CardTitle>
-            <Link
-              href="/admin/fleet?status=running&sort=lastActiveAt&dir=asc"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0"
-            >
-              View all →
-            </Link>
-          </div>
+          <CardTitle>Idle VMs</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-0">
           {rows.length === 0 ? (
             <p className="text-muted-foreground text-sm py-4 text-center">
               No running VMs with last activity older than 14 days.
@@ -83,6 +78,12 @@ export function IdleVmsTable({ rows }: Props) {
               </TableBody>
             </Table>
           )}
+          <div className="flex items-center justify-between pt-2 mt-1 border-t border-border/40">
+            <span className="text-xs text-muted-foreground">Running, idle 14+ days</span>
+            <Button variant="ghost" size="xs" onClick={() => router.push("/admin/fleet?status=running&sort=lastActiveAt&dir=asc")}>
+              View all
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

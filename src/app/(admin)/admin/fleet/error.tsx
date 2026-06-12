@@ -11,7 +11,6 @@ export default function FleetError({
 }) {
   return (
     <ErrorRetryPanel
-      variant="centered"
       message="Failed to load fleet data."
       error={error}
       onRetry={reset}

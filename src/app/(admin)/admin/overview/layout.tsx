@@ -1,3 +1,5 @@
+import { PageHeader } from "@/components/layout/page-header";
+
 export default function OverviewLayout({
   children: _children,
   kpis,
@@ -19,12 +21,19 @@ export default function OverviewLayout({
 }) {
   return (
     <div className="space-y-5">
-      <div className="flex items-start justify-between gap-4">
-        <h1>Overview</h1>
-        <p className="text-xs text-muted-foreground shrink-0 mt-1.5">
-          Updated {new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
-        </p>
-      </div>
+      <PageHeader
+        title="Overview"
+        actions={
+          <p className="text-xs text-muted-foreground tabular-nums">
+            Updated{" "}
+            {new Date().toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })}
+          </p>
+        }
+      />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {kpis}
         <div className="col-span-2">

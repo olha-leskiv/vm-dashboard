@@ -31,8 +31,8 @@ function CostMetric({
   return (
     <div className="flex h-full min-h-0 flex-col ">
       <div className="flex gap-3 items-center mb-7">
-        <div className="rounded-lg bg-zinc-800 flex size-12 shrink-0 items-center justify-center text-zinc-400">
-          <Icon className="size-5" strokeWidth={1.2} aria-hidden />
+        <div className="rounded-lg bg-zinc-800 flex size-12 shrink-0 items-center justify-center text-zinc-300">
+          <Icon className="size-6" strokeWidth={1.2} aria-hidden />
         </div>
 
       </div>

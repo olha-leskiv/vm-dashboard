@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { VmStatusIconChip } from "@/components/overview/vm-status-icon-chip";
 import { VmDrawer } from "@/components/vm-drawer";
@@ -36,6 +38,7 @@ interface Props {
 }
 
 export function HotVmsTable({ rows }: Props) {
+  const router = useRouter();
   const [selectedVm, setSelectedVm] = useState<VM | null>(null);
   const selectedOwnerName = selectedVm
     ? (rows.find((r) => r.vm.id === selectedVm.id)?.ownerName ?? selectedVm.ownerId)
@@ -45,17 +48,9 @@ export function HotVmsTable({ rows }: Props) {
     <>
       <Card className="h-full">
         <CardHeader>
-          <div className="flex items-center justify-between gap-2">
-            <CardTitle>Hot VMs</CardTitle>
-            <Link
-              href="/admin/fleet?sort=cpuUsagePercent&dir=desc"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0"
-            >
-              View all →
-            </Link>
-          </div>
+          <CardTitle>Hot VMs</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-0">
           {rows.length === 0 ? (
             <p className="text-muted-foreground text-sm py-4 text-center">No hot VMs.</p>
           ) : (
@@ -75,7 +70,7 @@ export function HotVmsTable({ rows }: Props) {
                         <VmStatusIconChip status={vm.status} size="compact" />
                         <button
                           onClick={() => setSelectedVm(vm)}
-                          className="min-w-0 font-mono text-xs hover:text-foreground text-muted-foreground hover:underline underline-offset-2 transition-colors text-left"
+                          className="min-w-0 font-mono text-xs hover:text-foreground text-muted-foreground hover:underline underline-offset-2 transition-colors text-left cursor-pointer"
                         >
                           {vm.name}
                         </button>
@@ -97,6 +92,12 @@ export function HotVmsTable({ rows }: Props) {
               </TableBody>
             </Table>
           )}
+          <div className="flex items-center justify-between pt-2 mt-1 border-t border-border/40">
+            <span className="text-xs text-muted-foreground">Sorted by CPU usage</span>
+            <Button variant="ghost" size="xs" onClick={() => router.push("/admin/fleet?sort=cpuUsagePercent&dir=desc")}>
+              View all
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

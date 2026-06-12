@@ -16,12 +16,15 @@ import { Button } from "@/components/ui/button";
 import { Tooltip as UITooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { UtilizationTrendPoint } from "@/types";
 
-type Period = "live" | "24h" | "30d";
+type Period = "live" | "1h" | "24h" | "7d" | "30d" | "365d";
 
 const PERIOD_LABELS: Record<Period, string> = {
   live: "Real-time",
-  "24h": "Last 24 hours",
-  "30d": "Last 30 days",
+  "1h": "Hour",
+  "24h": "Day",
+  "7d": "Week",
+  "30d": "Month",
+  "365d": "Year",
 };
 
 function formatHour(iso: string): string {
@@ -80,7 +83,7 @@ export function UtilizationChart({ trend }: { trend: UtilizationTrendPoint[] }) 
             </UITooltip>
           </div>
           <div className="flex gap-1">
-            {(["live", "24h", "30d"] as Period[]).map((p) => (
+            {(["live", "1h", "24h", "7d", "30d", "365d"] as Period[]).map((p) => (
               <Button
                 key={p}
                 size="xs"

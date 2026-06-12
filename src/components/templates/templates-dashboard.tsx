@@ -16,6 +16,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
+import { PageHeader } from "@/components/layout/page-header";
 import type { VMTemplate } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -258,14 +259,14 @@ function TemplateCard({ template, onView, onEdit }: TemplateCardProps) {
 
 // ─── view drawer ──────────────────────────────────────────────────────────────
 
-function ViewDrawer({
+export function ViewDrawer({
   template,
   onClose,
   onEdit,
 }: {
   template: VMTemplate | null;
   onClose: () => void;
-  onEdit: (t: VMTemplate) => void;
+  onEdit?: (t: VMTemplate) => void;
 }) {
   const t = template;
   return (
@@ -346,7 +347,7 @@ function ViewDrawer({
                 size="sm"
                 variant="outline"
                 className="w-full gap-1.5"
-                onClick={() => onEdit(t)}
+                onClick={() => onEdit?.(t)}
               >
                 <Pencil className="size-3.5" />
                 Edit Template
@@ -582,19 +583,16 @@ export function TemplatesDashboard() {
   return (
     <>
       <div className="space-y-5">
-        {/* header */}
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1>Templates</h1>
-            <p className="text-muted-foreground mt-0.5">
-              VM templates available to developers when creating machines.
-            </p>
-          </div>
-          <Button size="sm" onClick={openCreate} className="gap-1.5 shrink-0">
-            <Plus className="size-4" />
-            Create Template
-          </Button>
-        </div>
+        <PageHeader
+          title="Templates"
+          description="VM templates available to developers when creating machines."
+          actions={
+            <Button size="sm" onClick={openCreate} className="gap-1.5 shrink-0">
+              <Plus className="size-4" />
+              Create Template
+            </Button>
+          }
+        />
 
         {/* grid */}
         {templates.length === 0 ? (
