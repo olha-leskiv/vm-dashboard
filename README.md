@@ -44,6 +44,8 @@ I'm used to working from sparse briefs. Even so, before designing anything I res
 
 **Parallel routing on the admin overview.** Each dashboard card (KPIs, cost, utilization, hot VMs, idle VMs) loads and fails independently. A slow chart doesn't block the rest of the page.
 
+**Action Center on the admin overview.** Admins managing infrastructure expect a single place to see what needs their attention right now. The Action Center surfaces active alerts grouped by severity so nothing critical gets buried in the fleet table. This wasn't in the brief but felt like an obvious expectation for the persona.
+
 **Cross-navigation links throughout.** Clicking a VM or user from any table takes you directly to their detail — no dead ends.
 
 **Mock backend via Next.js API routes.** The client talks to real endpoints that import from `src/mocks/` and add simulated latency. Loading, error, and empty states work exactly as they would with a real backend.
@@ -54,11 +56,29 @@ I'm used to working from sparse briefs. Even so, before designing anything I res
 
 Missing pages need to be finished (Policies, VM time-series in the detail drawer).
 
+The Fleet Utilization chart period selector (Real-time / Hour / Day / Week…) is wired to the UI but all periods render the same 24-hour mock dataset — the chart is not truly interactive over time. Real backend data per period would make this functional.
+
 The admin dashboard needs a second pass — I'd re-evaluate each card and ask whether it actually earns its space.
 
 Code cleanup and Storybook for component management would improve maintainability.
 
 But the most important next step: **usability testing with real users.** Everything here is an assumption. I'd recruit 5 real engineers and admins, run task-based sessions, and follow up with short interviews. The design should be validated against actual behavior, not just good intentions.
+
+---
+
+## Accessibility
+
+The app has been audited against WCAG 2.2 AA. Fixes applied:
+
+- Active nav links marked with `aria-current="page"`
+- All icon-only buttons have `aria-label`
+- Clickable non-button elements (template cards) have `role="button"`, `tabIndex`, and keyboard handlers
+- SVG charts wrapped in `role="img"` with descriptive labels
+- Required form fields carry `aria-required="true"`; visual asterisks are `aria-hidden`
+- Section headings in drawers use correct hierarchy (`h3` under the sheet title)
+- Info tooltip triggers have `aria-label`
+
+Known gaps: charts lack a full data table alternative for screen reader users; ARIA live regions for VM status changes are not yet implemented.
 
 ---
 
