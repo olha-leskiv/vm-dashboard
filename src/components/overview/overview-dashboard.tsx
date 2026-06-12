@@ -16,7 +16,7 @@ import { useFleetOverview, useAllVms } from "@/lib/query/hooks";
 import { MOCK_USERS } from "@/mocks/users";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/layout/page-header";
-import { Badge } from "@/components/ui/badge";
+import { VmStatusBadge } from "@/components/vms/vm-status-badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatPercent, formatRelativeTime, utilizationColor } from "@/lib/utils/format";
@@ -167,16 +167,6 @@ function TableHead({ children, className }: { children: React.ReactNode; classNa
     </div>
   );
 }
-
-// ─── status badge ─────────────────────────────────────────────────────────────
-
-const STATUS_STYLES: Record<VMStatus, string> = {
-  running: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  stopped: "bg-muted text-muted-foreground border-transparent",
-  starting: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  stopping: "bg-orange-500/10 text-orange-400 border-orange-500/20",
-  error: "bg-destructive/10 text-destructive border-destructive/20",
-};
 
 // ─── loading skeleton ─────────────────────────────────────────────────────────
 
@@ -434,12 +424,7 @@ export function OverviewDashboard() {
                           {formatRelativeTime(m.lastActiveAt)}
                         </span>
                       )}
-                      <Badge
-                        variant="outline"
-                        className={cn("text-[10px] py-0 h-4 px-1.5 shrink-0", STATUS_STYLES[m.status])}
-                      >
-                        {m.status}
-                      </Badge>
+                      <VmStatusBadge status={m.status} />
                     </div>
                   </div>
                 ))}

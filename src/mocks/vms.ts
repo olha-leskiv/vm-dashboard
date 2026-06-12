@@ -97,3 +97,12 @@ function genVms(): VM[] {
 }
 
 export const MOCK_VMS = genVms();
+
+// Current user has 3 VMs — keep only the first running; make the others stopped/error
+const _currentUserVms = MOCK_VMS.filter((vm) => vm.ownerId === "usr-001");
+if (_currentUserVms[1]) {
+  Object.assign(_currentUserVms[1], { status: "stopped", cpuUsagePercent: 0, memoryUsagePercent: 0, startedAt: null });
+}
+if (_currentUserVms[2]) {
+  Object.assign(_currentUserVms[2], { status: "error", cpuUsagePercent: 0, memoryUsagePercent: 0, startedAt: null });
+}
