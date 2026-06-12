@@ -1,14 +1,4 @@
-export type AlertSeverity = "critical" | "warning";
-
-export interface Alert {
-  id: string;
-  severity: AlertSeverity;
-  message: string;
-  detail: string;
-  timestamp: string;
-  relatedVmId?: string;
-  relatedUserId?: string;
-}
+import type { Alert } from "@/types";
 
 // Pre-sorted: critical first (newest → oldest), then warnings (newest → oldest)
 export const MOCK_ALERTS: Alert[] = [

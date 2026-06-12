@@ -91,7 +91,7 @@ export function Sidebar({ navItems, user, accountHref = "/admin/account" }: Side
                       className={`flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors ${active
                         ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
                         : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60"
-                      }`}
+                        }`}
                     >
                       {Icon && <Icon className="size-4 shrink-0" />}
                       {item.label}

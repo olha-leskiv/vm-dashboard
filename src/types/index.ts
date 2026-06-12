@@ -77,6 +77,18 @@ export interface FleetUtilization {
   vmMetrics: VMMetricSnapshot[];
 }
 
+export type AlertSeverity = "critical" | "warning";
+
+export interface Alert {
+  id: string;
+  severity: AlertSeverity;
+  message: string;
+  detail: string;
+  timestamp: string;
+  relatedVmId?: string;
+  relatedUserId?: string;
+}
+
 export interface ApiResponse<T> {
   data: T;
   meta: { timestamp: string; count?: number };

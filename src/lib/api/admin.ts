@@ -1,4 +1,4 @@
-import type { ApiResponse, FleetUtilization, VM, VMTemplate } from "@/types";
+import type { ApiResponse, Alert, FleetUtilization, VM, VMTemplate } from "@/types";
 import { apiFetch } from "./client";
 
 export async function getFleetOverview(): Promise<ApiResponse<FleetUtilization>> {
@@ -11,4 +11,8 @@ export async function getAllVms(): Promise<ApiResponse<VM[]>> {
 
 export async function getTemplates(): Promise<ApiResponse<VMTemplate[]>> {
   return apiFetch<ApiResponse<VMTemplate[]>>("/api/admin/templates");
+}
+
+export async function getAlerts(): Promise<ApiResponse<Alert[]>> {
+  return apiFetch<ApiResponse<Alert[]>>("/api/admin/alerts");
 }

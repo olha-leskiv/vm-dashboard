@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatRelativeTime } from "@/lib/utils/format";
-import type { Alert } from "@/mocks/alerts";
+import type { Alert } from "@/types";
 
 function SeverityIcon({ severity }: { severity: Alert["severity"] }) {
   if (severity === "critical") {
