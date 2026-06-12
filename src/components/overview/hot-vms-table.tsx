@@ -70,6 +70,7 @@ export function HotVmsTable({ rows }: Props) {
                         <VmStatusIconChip status={vm.status} size="compact" />
                         <button
                           onClick={() => setSelectedVm(vm)}
+                          aria-label={`View details for ${vm.name}`}
                           className="min-w-0 font-mono text-xs hover:text-foreground text-muted-foreground hover:underline underline-offset-2 transition-colors text-left cursor-pointer"
                         >
                           {vm.name}
@@ -94,7 +95,7 @@ export function HotVmsTable({ rows }: Props) {
           )}
           <div className="flex items-center justify-between pt-2 mt-1 border-t border-border/40">
             <span className="text-xs text-muted-foreground">Sorted by CPU usage</span>
-            <Button variant="ghost" size="xs" onClick={() => router.push("/admin/fleet?sort=cpuUsagePercent&dir=desc")}>
+            <Button variant="ghost" size="xs" aria-label="View all hot VMs" onClick={() => router.push("/admin/fleet?sort=cpuUsagePercent&dir=desc")}>
               View all
             </Button>
           </div>

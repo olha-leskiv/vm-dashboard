@@ -46,7 +46,7 @@ function CostMetric({
       </p>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1">
-          <p className="font-medium text-base leading-snug text-muted-foreground">{label}</p>
+          <p className=" leading-snug text-muted-foreground">{label}</p>
           {subtitle ? (
             <Tooltip>
               <TooltipTrigger>

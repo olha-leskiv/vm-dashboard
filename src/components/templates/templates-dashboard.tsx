@@ -295,9 +295,9 @@ function FormDrawer({ mode, defaultValues, onClose, onSave, editId }: FormDrawer
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name <span className="text-destructive">*</span></FormLabel>
+                    <FormLabel>Name <span className="text-destructive" aria-hidden="true">*</span></FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="e.g. Dev Standard" />
+                      <Input {...field} aria-required="true" placeholder="e.g. Dev Standard" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -327,9 +327,9 @@ function FormDrawer({ mode, defaultValues, onClose, onSave, editId }: FormDrawer
                 name="baseImage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Base Image <span className="text-destructive">*</span></FormLabel>
+                    <FormLabel>Base Image <span className="text-destructive" aria-hidden="true">*</span></FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="e.g. ubuntu-22.04" className="font-mono" />
+                      <Input {...field} aria-required="true" placeholder="e.g. ubuntu-22.04" className="font-mono" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -342,9 +342,9 @@ function FormDrawer({ mode, defaultValues, onClose, onSave, editId }: FormDrawer
                   name="vCpu"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>vCPU <span className="text-destructive">*</span></FormLabel>
+                      <FormLabel>vCPU <span className="text-destructive" aria-hidden="true">*</span></FormLabel>
                       <FormControl>
-                        <Input {...field} type="number" min={1} step={1} placeholder="4" />
+                        <Input {...field} aria-required="true" type="number" min={1} step={1} placeholder="4" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -356,9 +356,9 @@ function FormDrawer({ mode, defaultValues, onClose, onSave, editId }: FormDrawer
                   name="memoryGb"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Memory (GB) <span className="text-destructive">*</span></FormLabel>
+                      <FormLabel>Memory (GB) <span className="text-destructive" aria-hidden="true">*</span></FormLabel>
                       <FormControl>
-                        <Input {...field} type="number" min={1} placeholder="16" />
+                        <Input {...field} aria-required="true" type="number" min={1} placeholder="16" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -370,9 +370,9 @@ function FormDrawer({ mode, defaultValues, onClose, onSave, editId }: FormDrawer
                   name="diskSizeGb"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Disk (GB) <span className="text-destructive">*</span></FormLabel>
+                      <FormLabel>Disk (GB) <span className="text-destructive" aria-hidden="true">*</span></FormLabel>
                       <FormControl>
-                        <Input {...field} type="number" min={10} placeholder="100" />
+                        <Input {...field} aria-required="true" type="number" min={10} placeholder="100" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

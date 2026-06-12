@@ -29,8 +29,8 @@ export function ActionCenter({ alerts }: Props) {
           <div className="flex items-center gap-1.5">
             <CardTitle>Action Center</CardTitle>
             <Tooltip>
-              <TooltipTrigger>
-                <Info className="size-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help" />
+              <TooltipTrigger aria-label="About action center alerts">
+                <Info className="size-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help" aria-hidden="true" />
               </TooltipTrigger>
               <TooltipContent>Active alerts requiring admin attention</TooltipContent>
             </Tooltip>

@@ -57,8 +57,8 @@ export function FleetStatusCard({ totalVms, runningVms, startingVms, stoppedVms 
         <div className="flex items-center gap-1.5">
           <CardTitle>VM Fleet</CardTitle>
           <Tooltip>
-            <TooltipTrigger>
-              <Info className="size-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help" />
+            <TooltipTrigger aria-label="About VM fleet">
+              <Info className="size-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help" aria-hidden="true" />
             </TooltipTrigger>
             <TooltipContent>Distribution of all VMs by current status</TooltipContent>
           </Tooltip>
@@ -66,7 +66,7 @@ export function FleetStatusCard({ totalVms, runningVms, startingVms, stoppedVms 
       </CardHeader>
       <CardContent className="flex items-center gap-8">
         {/* donut */}
-        <div className="relative shrink-0" style={{ width: 160, height: 160 }}>
+        <div role="img" aria-label={`Donut chart: ${runningVms} running, ${startingVms} starting, ${stoppedVms} stopped out of ${totalVms} total VMs`} className="relative shrink-0" style={{ width: 160, height: 160 }}>
           <PieChart width={160} height={160}>
             <defs>
               {VM_SEGMENTS.map((s) => (

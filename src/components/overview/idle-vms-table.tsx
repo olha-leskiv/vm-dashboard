@@ -56,6 +56,7 @@ export function IdleVmsTable({ rows }: Props) {
                         <VmStatusIconChip status={vm.status} size="compact" />
                         <button
                           onClick={() => setSelectedVm(vm)}
+                          aria-label={`View details for ${vm.name}`}
                           className="min-w-0 font-mono text-xs hover:text-foreground text-muted-foreground hover:underline underline-offset-2 transition-colors text-left"
                         >
                           {vm.name}
@@ -80,7 +81,7 @@ export function IdleVmsTable({ rows }: Props) {
           )}
           <div className="flex items-center justify-between pt-2 mt-1 border-t border-border/40">
             <span className="text-xs text-muted-foreground">Running, idle 14+ days</span>
-            <Button variant="ghost" size="xs" onClick={() => router.push("/admin/fleet?status=running&sort=lastActiveAt&dir=asc")}>
+            <Button variant="ghost" size="xs" aria-label="View all idle VMs" onClick={() => router.push("/admin/fleet?status=running&sort=lastActiveAt&dir=asc")}>
               View all
             </Button>
           </div>

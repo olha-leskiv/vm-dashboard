@@ -76,8 +76,8 @@ export function UtilizationChart({ trend }: { trend: UtilizationTrendPoint[] }) 
           <div className="flex items-center gap-1.5">
             <CardTitle>Fleet Utilization</CardTitle>
             <UITooltip>
-              <TooltipTrigger>
-                <Info className="size-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help" />
+              <TooltipTrigger aria-label="About fleet utilization">
+                <Info className="size-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help" aria-hidden="true" />
               </TooltipTrigger>
               <TooltipContent>Average CPU and memory usage across running VMs</TooltipContent>
             </UITooltip>
@@ -112,6 +112,7 @@ export function UtilizationChart({ trend }: { trend: UtilizationTrendPoint[] }) 
             No data for this period.
           </div>
         ) : (
+          <div role="img" aria-label={`Fleet utilization chart showing CPU and memory usage over time`}>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
               <CartesianGrid
@@ -162,6 +163,7 @@ export function UtilizationChart({ trend }: { trend: UtilizationTrendPoint[] }) 
               />
             </LineChart>
           </ResponsiveContainer>
+          </div>
         )}
       </CardContent>
     </Card>

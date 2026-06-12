@@ -168,9 +168,9 @@ export function VmDrawer({ vm, ownerName, onClose }: VmDrawerProps) {
 
             <div className="px-4 py-4 space-y-5">
               <section>
-                <h4 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
+                <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
                   Metadata
-                </h4>
+                </h3>
                 <MetaRow label="Owner" value={ownerName} />
                 <MetaRow label="Template" value={template?.name ?? vm.templateId} />
                 <MetaRow label="Region" value={vm.region} />
@@ -190,9 +190,9 @@ export function VmDrawer({ vm, ownerName, onClose }: VmDrawerProps) {
               <Separator />
 
               <section>
-                <h4 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-3">
+                <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-3">
                   Current Utilization
-                </h4>
+                </h3>
                 <div className="space-y-3">
                   <DetailBar value={vm.cpuUsagePercent} label="CPU" />
                   <DetailBar value={vm.memoryUsagePercent} label="Memory" />
@@ -203,18 +203,18 @@ export function VmDrawer({ vm, ownerName, onClose }: VmDrawerProps) {
               <Separator />
 
               <section>
-                <h4 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-3">
+                <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-3">
                   Usage — Last 24 h
-                </h4>
+                </h3>
                 <VmUtilizationChart vmId={vm.id} />
               </section>
 
               <Separator />
 
               <section>
-                <h4 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
+                <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
                   Timeline
-                </h4>
+                </h3>
                 <MetaRow label="Created" value={formatDate(vm.createdAt)} />
                 <MetaRow label="Started" value={formatDate(vm.startedAt)} />
                 <MetaRow label="Last active" value={formatRelativeTime(vm.lastActiveAt)} />
@@ -223,9 +223,9 @@ export function VmDrawer({ vm, ownerName, onClose }: VmDrawerProps) {
               <Separator />
 
               <section>
-                <h4 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
+                <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
                   Cost
-                </h4>
+                </h3>
                 <MetaRow label="Hourly rate" value={<span className="font-mono">{formatCost(vm.hourlyCost)}</span>} />
               </section>
             </div>

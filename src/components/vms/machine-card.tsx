@@ -251,10 +251,11 @@ export function MachineCard({ vm }: { vm: VM }) {
           <Button
             variant="ghost"
             size="icon"
+            aria-label={`View details for ${vm.name}`}
             className="size-8 shrink-0 text-muted-foreground hover:text-foreground -mr-1"
             onClick={() => setDrawerOpen(true)}
           >
-            <Info className="size-4" />
+            <Info className="size-4" aria-hidden="true" />
           </Button>
         </div>
 
