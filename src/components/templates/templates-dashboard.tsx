@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, KeyboardEvent } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Plus, Pencil, Server, X, HardDrive, Cpu, MemoryStick } from "lucide-react";
 import { useTemplates } from "@/lib/query/hooks";
 import { Button } from "@/components/ui/button";
@@ -9,6 +12,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  FormDescription,
+} from "@/components/ui/form";
 import {
   Sheet,
   SheetContent,
@@ -20,41 +32,36 @@ import { PageHeader } from "@/components/layout/page-header";
 import { TemplateCard } from "@/components/templates/template-card";
 import type { VMTemplate } from "@/types";
 
-// ─── form types ───────────────────────────────────────────────────────────────
+// ─── schema ───────────────────────────────────────────────────────────────────
 
-interface FormFields {
-  name: string;
-  description: string;
-  baseImage: string;
-  vCpu: string;
-  memoryGb: string;
-  diskSizeGb: string;
-  preinstalledTools: string[];
-}
+const templateSchema = z.object({
+  name: z.string().min(2, "Must be at least 2 characters."),
+  description: z.string(),
+  baseImage: z.string().min(1, "Base image is required."),
+  vCpu: z.string().refine(
+    (v) => v !== "" && Number.isInteger(Number(v)) && Number(v) >= 1,
+    "Must be a whole number ≥ 1."
+  ),
+  memoryGb: z.string().refine(
+    (v) => v !== "" && !isNaN(Number(v)) && Number(v) >= 1,
+    "Must be ≥ 1 GB."
+  ),
+  diskSizeGb: z.string().refine(
+    (v) => v !== "" && !isNaN(Number(v)) && Number(v) >= 10,
+    "Must be ≥ 10 GB."
+  ),
+  preinstalledTools: z.array(z.string()),
+});
 
-interface FormErrors {
-  name?: string;
-  baseImage?: string;
-  vCpu?: string;
-  memoryGb?: string;
-  diskSizeGb?: string;
-}
+type TemplateFormValues = z.infer<typeof templateSchema>;
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
-function blankForm(): FormFields {
-  return {
-    name: "",
-    description: "",
-    baseImage: "",
-    vCpu: "",
-    memoryGb: "",
-    diskSizeGb: "",
-    preinstalledTools: [],
-  };
+function generateId() {
+  return `tpl-${Date.now().toString(36)}`;
 }
 
-function templateToForm(t: VMTemplate): FormFields {
+function templateToValues(t: VMTemplate): TemplateFormValues {
   return {
     name: t.name,
     description: t.description,
@@ -66,23 +73,16 @@ function templateToForm(t: VMTemplate): FormFields {
   };
 }
 
-function validate(f: FormFields): FormErrors {
-  const e: FormErrors = {};
-  if (!f.name.trim()) e.name = "Name is required.";
-  else if (f.name.trim().length < 2) e.name = "Must be at least 2 characters.";
-  if (!f.baseImage.trim()) e.baseImage = "Base image is required.";
-  const vCpu = Number(f.vCpu);
-  if (!f.vCpu || isNaN(vCpu) || vCpu < 1 || !Number.isInteger(vCpu))
-    e.vCpu = "Must be a whole number ≥ 1.";
-  const mem = Number(f.memoryGb);
-  if (!f.memoryGb || isNaN(mem) || mem < 1) e.memoryGb = "Must be ≥ 1 GB.";
-  const disk = Number(f.diskSizeGb);
-  if (!f.diskSizeGb || isNaN(disk) || disk < 10) e.diskSizeGb = "Must be ≥ 10 GB.";
-  return e;
-}
-
-function generateId() {
-  return `tpl-${Date.now().toString(36)}`;
+function blankValues(): TemplateFormValues {
+  return {
+    name: "",
+    description: "",
+    baseImage: "",
+    vCpu: "",
+    memoryGb: "",
+    diskSizeGb: "",
+    preinstalledTools: [],
+  };
 }
 
 // ─── tools tag input ──────────────────────────────────────────────────────────
@@ -125,42 +125,19 @@ function ToolsInput({
           {value.map((tool) => (
             <Badge key={tool} variant="secondary" className="gap-1 pr-1 font-mono text-xs">
               {tool}
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon-xs"
                 onClick={() => onChange(value.filter((t) => t !== tool))}
-                className="rounded hover:text-foreground transition-colors"
+                className="size-3.5 rounded hover:text-foreground"
               >
                 <X className="size-3" />
-              </button>
+              </Button>
             </Badge>
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
-// ─── form field wrapper ───────────────────────────────────────────────────────
-
-function FormField({
-  label,
-  required,
-  error,
-  children,
-}: {
-  label: string;
-  required?: boolean;
-  error?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <label className="text-xs font-medium">
-        {label}
-        {required && <span className="text-destructive ml-0.5">*</span>}
-      </label>
-      {children}
-      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
 }
@@ -196,7 +173,6 @@ export function ViewDrawer({
             </SheetHeader>
 
             <div className="px-4 py-4 space-y-5">
-              {/* base image */}
               <section>
                 <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
                   Base Image
@@ -209,7 +185,6 @@ export function ViewDrawer({
 
               <Separator />
 
-              {/* hardware */}
               <section>
                 <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-3">
                   Hardware Specifications
@@ -231,7 +206,6 @@ export function ViewDrawer({
 
               <Separator />
 
-              {/* tools */}
               <section>
                 <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
                   Preinstalled Tools
@@ -272,40 +246,30 @@ export function ViewDrawer({
 
 interface FormDrawerProps {
   mode: "create" | "edit" | null;
-  initial: FormFields;
+  defaultValues: TemplateFormValues;
   onClose: () => void;
-  onSave: (fields: FormFields, id?: string) => void;
+  onSave: (values: TemplateFormValues, id?: string) => void;
   editId?: string;
 }
 
-function FormDrawer({ mode, initial, onClose, onSave, editId }: FormDrawerProps) {
-  const [fields, setFields] = useState<FormFields>(initial);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [saving, setSaving] = useState(false);
+function FormDrawer({ mode, defaultValues, onClose, onSave, editId }: FormDrawerProps) {
+  const form = useForm<TemplateFormValues>({
+    resolver: zodResolver(templateSchema),
+    defaultValues,
+  });
 
-  // reset when mode/initial changes
+  const [saving, setSaving] = useState(false);
   const open = mode !== null;
 
-  function set<K extends keyof FormFields>(key: K, value: FormFields[K]) {
-    setFields((f) => ({ ...f, [key]: value }));
-    if (key in errors) setErrors((e) => ({ ...e, [key]: undefined }));
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const errs = validate(fields);
-    if (Object.keys(errs).length > 0) {
-      setErrors(errs);
-      return;
-    }
+  async function onSubmit(values: TemplateFormValues) {
     setSaving(true);
     await new Promise((r) => setTimeout(r, 400));
-    onSave(fields, editId);
+    onSave(values, editId);
     setSaving(false);
   }
 
   function handleClose() {
-    setErrors({});
+    form.reset();
     onClose();
   }
 
@@ -323,95 +287,123 @@ function FormDrawer({ mode, initial, onClose, onSave, editId }: FormDrawerProps)
           </SheetDescription>
         </SheetHeader>
 
-        <form onSubmit={handleSubmit} noValidate>
-          <div className="px-4 py-4 space-y-4">
-            <FormField label="Name" required error={errors.name}>
-              <Input
-                value={fields.name}
-                onChange={(e) => set("name", e.target.value)}
-                placeholder="e.g. Dev Standard"
-                aria-invalid={!!errors.name}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
+            <div className="px-4 py-4 space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name <span className="text-destructive">*</span></FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="e.g. Dev Standard" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </FormField>
 
-            <FormField label="Description" error={undefined}>
-              <Textarea
-                value={fields.description}
-                onChange={(e) => set("description", e.target.value)}
-                placeholder="Short description of what this template is for…"
-                rows={2}
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        placeholder="Short description of what this template is for…"
+                        rows={2}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </FormField>
 
-            <FormField label="Base Image" required error={errors.baseImage}>
-              <Input
-                value={fields.baseImage}
-                onChange={(e) => set("baseImage", e.target.value)}
-                placeholder="e.g. ubuntu-22.04"
-                aria-invalid={!!errors.baseImage}
-                className="font-mono"
+              <FormField
+                control={form.control}
+                name="baseImage"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Base Image <span className="text-destructive">*</span></FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="e.g. ubuntu-22.04" className="font-mono" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </FormField>
 
-            <div className="grid grid-cols-3 gap-3">
-              <FormField label="vCPU" required error={errors.vCpu}>
-                <Input
-                  type="number"
-                  min={1}
-                  step={1}
-                  value={fields.vCpu}
-                  onChange={(e) => set("vCpu", e.target.value)}
-                  placeholder="4"
-                  aria-invalid={!!errors.vCpu}
+              <div className="grid grid-cols-3 gap-3">
+                <FormField
+                  control={form.control}
+                  name="vCpu"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>vCPU <span className="text-destructive">*</span></FormLabel>
+                      <FormControl>
+                        <Input {...field} type="number" min={1} step={1} placeholder="4" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </FormField>
 
-              <FormField label="Memory (GB)" required error={errors.memoryGb}>
-                <Input
-                  type="number"
-                  min={1}
-                  value={fields.memoryGb}
-                  onChange={(e) => set("memoryGb", e.target.value)}
-                  placeholder="16"
-                  aria-invalid={!!errors.memoryGb}
+                <FormField
+                  control={form.control}
+                  name="memoryGb"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Memory (GB) <span className="text-destructive">*</span></FormLabel>
+                      <FormControl>
+                        <Input {...field} type="number" min={1} placeholder="16" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </FormField>
 
-              <FormField label="Disk (GB)" required error={errors.diskSizeGb}>
-                <Input
-                  type="number"
-                  min={10}
-                  value={fields.diskSizeGb}
-                  onChange={(e) => set("diskSizeGb", e.target.value)}
-                  placeholder="100"
-                  aria-invalid={!!errors.diskSizeGb}
+                <FormField
+                  control={form.control}
+                  name="diskSizeGb"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Disk (GB) <span className="text-destructive">*</span></FormLabel>
+                      <FormControl>
+                        <Input {...field} type="number" min={10} placeholder="100" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </FormField>
+              </div>
+
+              <FormField
+                control={form.control}
+                name="preinstalledTools"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Preinstalled Tools</FormLabel>
+                    <ToolsInput value={field.value} onChange={field.onChange} />
+                    <FormDescription>Press Enter or comma to add each tool.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
-            <FormField
-              label="Preinstalled Tools"
-              error={undefined}
-            >
-              <ToolsInput
-                value={fields.preinstalledTools}
-                onChange={(v) => set("preinstalledTools", v)}
-              />
-              <p className="text-[11px] text-muted-foreground mt-1">
-                Press Enter or comma to add each tool.
-              </p>
-            </FormField>
-          </div>
-
-          <div className="px-4 pb-4 pt-2 border-t border-border flex gap-2 justify-end">
-            <Button type="button" variant="ghost" size="sm" onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button type="submit" size="sm" disabled={saving}>
-              {saving ? "Saving…" : mode === "create" ? "Create Template" : "Save Changes"}
-            </Button>
-          </div>
-        </form>
+            <div className="px-4 pb-4 pt-2 border-t border-border flex gap-2 justify-end">
+              <Button type="button" variant="ghost" size="sm" onClick={handleClose}>
+                Cancel
+              </Button>
+              <Button type="submit" size="sm" disabled={saving}>
+                {saving ? "Saving…" : mode === "create" ? "Create Template" : "Save Changes"}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </SheetContent>
     </Sheet>
   );
@@ -448,7 +440,7 @@ export function TemplatesDashboard() {
   const [formMode, setFormMode] = useState<"create" | "edit" | null>(null);
   const [editTarget, setEditTarget] = useState<VMTemplate | null>(null);
 
-  const formInitial = editTarget ? templateToForm(editTarget) : blankForm();
+  const formDefaults = editTarget ? templateToValues(editTarget) : blankValues();
 
   function openEdit(t: VMTemplate) {
     setViewTemplate(null);
@@ -468,16 +460,16 @@ export function TemplatesDashboard() {
     setEditTarget(null);
   }
 
-  function handleSave(fields: FormFields, id?: string) {
+  function handleSave(values: TemplateFormValues, id?: string) {
     const template: VMTemplate = {
       id: id ?? generateId(),
-      name: fields.name.trim(),
-      description: fields.description.trim(),
-      baseImage: fields.baseImage.trim(),
-      vCpu: Number(fields.vCpu),
-      memoryGb: Number(fields.memoryGb),
-      diskSizeGb: Number(fields.diskSizeGb),
-      preinstalledTools: fields.preinstalledTools,
+      name: values.name.trim(),
+      description: values.description.trim(),
+      baseImage: values.baseImage.trim(),
+      vCpu: Number(values.vCpu),
+      memoryGb: Number(values.memoryGb),
+      diskSizeGb: Number(values.diskSizeGb),
+      preinstalledTools: values.preinstalledTools,
     };
 
     if (id) {
@@ -502,7 +494,6 @@ export function TemplatesDashboard() {
           }
         />
 
-        {/* grid */}
         {templates.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 gap-3 rounded-xl border border-dashed border-border text-center">
             <p className="text-muted-foreground text-sm">No templates yet.</p>
@@ -534,7 +525,7 @@ export function TemplatesDashboard() {
       <FormDrawer
         key={`${formMode}-${editTarget?.id ?? "new"}`}
         mode={formMode}
-        initial={formInitial}
+        defaultValues={formDefaults}
         editId={editTarget?.id}
         onClose={closeForm}
         onSave={handleSave}
