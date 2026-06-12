@@ -22,7 +22,7 @@ export function ActionCenter({ alerts }: Props) {
   const displayed = alerts.slice(0, 5);
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-1.5">

@@ -45,7 +45,7 @@ export function UtilizationDistribution({ metrics, totalVms }: Props) {
   }));
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-1.5">

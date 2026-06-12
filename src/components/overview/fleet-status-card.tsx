@@ -25,7 +25,7 @@ export function FleetStatusCard({ totalVms, runningVms, startingVms, stoppedVms 
   );
 
   return (
-    <Card size="sm" className="min-w-0">
+    <Card size="sm" className="min-w-0 h-full">
       <CardHeader>
         <div className="flex items-center gap-1.5">
           <CardTitle>VM Fleet</CardTitle>

@@ -17,7 +17,7 @@ export default async function CostPage() {
   const { data: fleet } = await cachedGetFleetOverview();
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <div className="flex items-center gap-1.5">
           <CardTitle>Cost Summary</CardTitle>

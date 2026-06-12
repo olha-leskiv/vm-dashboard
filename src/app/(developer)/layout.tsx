@@ -8,7 +8,7 @@ export default async function DeveloperLayout({ children }: { children: React.Re
   const user = await getAuthUser();
   return (
     <div className="flex h-screen">
-      <Sidebar navItems={NAV_ITEMS} user={user} />
+      <Sidebar navItems={NAV_ITEMS} user={user} accountHref="/developer/account" />
       <main className="flex-1 overflow-auto p-6">{children}</main>
     </div>
   );

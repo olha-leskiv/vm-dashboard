@@ -1,25 +1,6 @@
-import Link from "next/link";
 import { cachedGetFleetOverview, cachedGetAllVms } from "@/lib/api/cached";
 import { MOCK_USERS } from "@/mocks/users";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { utilizationColor } from "@/lib/utils/format";
-import { cn } from "@/lib/utils";
-
-function CpuBar({ value }: { value: number }) {
-  const barColor =
-    value >= 85 ? "bg-destructive" : value >= 70 ? "bg-amber-400" : "bg-emerald-400";
-  return (
-    <div className="flex items-center gap-2 min-w-0">
-      <span className={cn("tabular-nums shrink-0 w-7 text-right text-xs", utilizationColor(value))}>
-        {value}%
-      </span>
-      <div className="flex-1 bg-muted rounded-full h-1.5 min-w-[40px]">
-        <div className={cn("h-full rounded-full transition-all", barColor)} style={{ width: `${value}%` }} />
-      </div>
-    </div>
-  );
-}
+import { HotVmsTable } from "@/components/overview/hot-vms-table";
 
 export default async function HotVmsPage() {
   const [{ data: fleet }, { data: vms }] = await Promise.all([
@@ -28,61 +9,18 @@ export default async function HotVmsPage() {
   ]);
 
   const vmById = Object.fromEntries(vms.map((v) => [v.id, v]));
-  const userById = Object.fromEntries(MOCK_USERS.map((u) => [u.id, u.name]));
+  const userById = Object.fromEntries(MOCK_USERS.map((u) => [u.id, u]));
 
-  const hotVms = fleet.vmMetrics
+  const rows = fleet.vmMetrics
     .filter((m) => m.status === "running" && m.cpuPercent > 0)
     .sort((a, b) => b.cpuPercent - a.cpuPercent)
     .slice(0, 5)
-    .map((m) => {
+    .flatMap((m) => {
       const vm = vmById[m.vmId];
-      return {
-        vmId: m.vmId,
-        name: vm?.name ?? m.vmId,
-        ownerName: vm ? (userById[vm.ownerId] ?? vm.ownerId) : "—",
-        cpuPercent: m.cpuPercent,
-      };
+      if (!vm) return [];
+      const user = userById[vm.ownerId];
+      return [{ vm, ownerName: user?.name ?? vm.ownerId, ownerId: vm.ownerId }];
     });
 
-  return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between gap-2">
-          <CardTitle>Hot VMs</CardTitle>
-          <Link
-            href="/admin/fleet?sort=cpuUsagePercent&dir=desc"
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0"
-          >
-            View all →
-          </Link>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {hotVms.length === 0 ? (
-          <p className="text-muted-foreground text-sm py-4 text-center">No hot VMs.</p>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-[11px] uppercase tracking-wider h-7 px-0">VM</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider h-7">Owner</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider h-7">CPU</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {hotVms.map((m) => (
-                <TableRow key={m.vmId}>
-                  <TableCell className="font-mono text-xs px-0">{m.name}</TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{m.ownerName}</TableCell>
-                  <TableCell className="min-w-[100px]">
-                    <CpuBar value={m.cpuPercent} />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </CardContent>
-    </Card>
-  );
+  return <HotVmsTable rows={rows} />;
 }

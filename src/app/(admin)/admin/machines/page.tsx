@@ -13,7 +13,7 @@ export default async function AdminMachinesPage() {
   });
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="space-y-6">
       <h1>My Machines</h1>
       <HydrationBoundary state={dehydrate(queryClient)}>
         <Suspense fallback={<p className="text-muted-foreground">Loading…</p>}>
