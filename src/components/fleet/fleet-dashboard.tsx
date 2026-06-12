@@ -2,7 +2,8 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { Search, ChevronUp, ChevronDown, ChevronsUpDown, X, Plus } from "lucide-react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { Search, ChevronUp, ChevronDown, ChevronsUpDown, X, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAllVms } from "@/lib/query/hooks";
 import { MOCK_TEMPLATES } from "@/mocks/templates";
 import { MOCK_USERS } from "@/mocks/users";
@@ -192,6 +193,8 @@ export function FleetSkeleton() {
   );
 }
 
+const PAGE_SIZE = 20;
+
 // ─── fleet dashboard ──────────────────────────────────────────────────────────
 
 interface FleetDashboardProps {
@@ -205,6 +208,10 @@ export function FleetDashboard({
   initialSortField = "name",
   initialSortDir = "asc",
 }: FleetDashboardProps = {}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const { data: vmsRes } = useAllVms();
   const vms = vmsRes.data;
 
@@ -217,6 +224,23 @@ export function FleetDashboard({
   const [selectedVm, setSelectedVm] = useState<VM | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<(typeof MOCK_TEMPLATES)[number] | null>(null);
 
+  const currentPage = Math.max(1, Number(searchParams.get("page") ?? 1));
+
+  function goToPage(page: number) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (page <= 1) params.delete("page");
+    else params.set("page", String(page));
+    const qs = params.toString();
+    router.replace(`${pathname}${qs ? `?${qs}` : ""}`);
+  }
+
+  function resetPage() {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("page");
+    const qs = params.toString();
+    router.replace(`${pathname}${qs ? `?${qs}` : ""}`);
+  }
+
   function handleSort(field: SortField) {
     if (sortField === field) {
       setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -224,6 +248,7 @@ export function FleetDashboard({
       setSortField(field);
       setSortDir("asc");
     }
+    resetPage();
   }
 
   const filtered = useMemo(
@@ -235,6 +260,12 @@ export function FleetDashboard({
       ),
     [vms, search, statusFilter, templateFilter, ownerFilter, sortField, sortDir]
   );
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const rangeStart = filtered.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1;
+  const rangeEnd = Math.min(safePage * PAGE_SIZE, filtered.length);
 
   const hasFilters =
     search !== "" || statusFilter !== "all" || templateFilter !== "all" || ownerFilter !== "all";
@@ -261,12 +292,12 @@ export function FleetDashboard({
             <Input
               placeholder="Search VMs…"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => { setSearch(e.target.value); resetPage(); }}
               className="pl-8"
             />
           </div>
 
-          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? "all")}>
+          <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v ?? "all"); resetPage(); }}>
             <SelectTrigger className="w-[130px]">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
@@ -280,7 +311,7 @@ export function FleetDashboard({
             </SelectContent>
           </Select>
 
-          <Select value={templateFilter} onValueChange={(v) => setTemplateFilter(v ?? "all")}>
+          <Select value={templateFilter} onValueChange={(v) => { setTemplateFilter(v ?? "all"); resetPage(); }}>
             <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="Template" />
             </SelectTrigger>
@@ -294,7 +325,7 @@ export function FleetDashboard({
             </SelectContent>
           </Select>
 
-          <Select value={ownerFilter} onValueChange={(v) => setOwnerFilter(v ?? "all")}>
+          <Select value={ownerFilter} onValueChange={(v) => { setOwnerFilter(v ?? "all"); resetPage(); }}>
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Owner" />
             </SelectTrigger>
@@ -317,6 +348,7 @@ export function FleetDashboard({
                 setStatusFilter("all");
                 setTemplateFilter("all");
                 setOwnerFilter("all");
+                resetPage();
               }}
               className="gap-1.5 text-muted-foreground"
             >
@@ -326,7 +358,7 @@ export function FleetDashboard({
           )}
 
           <span className="ml-auto text-xs text-muted-foreground tabular-nums">
-            {filtered.length} / {vms.length} VMs
+            {rangeStart}–{rangeEnd} of {filtered.length} VMs
           </span>
         </div>
 
@@ -358,7 +390,7 @@ export function FleetDashboard({
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filtered.map((vm) => (
+                  paginated.map((vm) => (
                     <TableRow
                       key={vm.id}
                       onClick={() => setSelectedVm(vm)}
@@ -409,6 +441,36 @@ export function FleetDashboard({
             </Table>
           </CardContent>
         </Card>
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground tabular-nums">
+              Page {safePage} of {totalPages}
+            </span>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => goToPage(safePage - 1)}
+                disabled={safePage <= 1}
+                className="gap-1"
+              >
+                <ChevronLeft className="size-3.5" />
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => goToPage(safePage + 1)}
+                disabled={safePage >= totalPages}
+                className="gap-1"
+              >
+                Next
+                <ChevronRight className="size-3.5" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       <VmDrawer
