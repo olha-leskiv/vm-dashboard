@@ -8,6 +8,7 @@ import { MOCK_USERS } from "@/mocks/users";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { VmStatusIconChip } from "@/components/overview/vm-status-icon-chip";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
@@ -355,7 +356,12 @@ export function FleetDashboard({
                     onClick={() => setSelectedVm(vm)}
                     className={cn("cursor-pointer", rowHighlight(vm))}
                   >
-                    <TableCell className="font-mono font-medium">{vm.name}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <VmStatusIconChip status={vm.status} size="compact" />
+                        <span className="font-mono font-medium truncate">{vm.name}</span>
+                      </div>
+                    </TableCell>
                     <TableCell className="text-muted-foreground text-xs">
                       {USER_MAP[vm.ownerId] ?? vm.ownerId}
                     </TableCell>

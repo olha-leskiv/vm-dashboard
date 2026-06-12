@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Info } from "lucide-react";
 import { PieChart, Pie, Cell } from "recharts";
@@ -19,15 +19,52 @@ interface Props {
 }
 
 const BUCKETS = [
-  { label: "> 80% (High)", min: 80, max: 101, color: "#ef4444", textClass: "text-red-400" },
-  { label: "50 – 80% (Elevated)", min: 50, max: 80, color: "#f97316", textClass: "text-orange-400" },
-  { label: "20 – 50% (Normal)", min: 20, max: 50, color: "#34d399", textClass: "text-emerald-400" },
-  { label: "< 20% (Low)", min: 0, max: 20, color: "#60a5fa", textClass: "text-blue-400" },
+  {
+    key: "high",
+    label: "> 80% (High)",
+    min: 80,
+    max: 101,
+    gradientId: "util-grad-high",
+    gradFrom: "var(--color-red-500)",
+    gradTo: "var(--color-rose-700)",
+    textClass: "text-red-400",
+  },
+  {
+    key: "elevated",
+    label: "50 – 80% (Elevated)",
+    min: 50,
+    max: 80,
+    gradientId: "util-grad-elevated",
+    gradFrom: "var(--color-amber-300)",
+    gradTo: "var(--color-orange-600)",
+    textClass: "text-orange-400",
+  },
+  {
+    key: "normal",
+    label: "20 – 50% (Normal)",
+    min: 20,
+    max: 50,
+    gradientId: "util-grad-normal",
+    gradFrom: "var(--color-green-400)",
+    gradTo: "var(--color-emerald-600)",
+    textClass: "text-emerald-400",
+  },
+  {
+    key: "low",
+    label: "< 20% (Low)",
+    min: 0,
+    max: 20,
+    gradientId: "util-grad-low",
+    gradFrom: "var(--color-sky-400)",
+    gradTo: "var(--color-blue-700)",
+    textClass: "text-blue-400",
+  },
 ] as const;
 
 type Mode = "cpu" | "memory";
 
 export function UtilizationDistribution({ metrics, totalVms }: Props) {
+  const router = useRouter();
   const [mode, setMode] = useState<Mode>("cpu");
 
   const counts = BUCKETS.map((b) => ({
@@ -41,7 +78,7 @@ export function UtilizationDistribution({ metrics, totalVms }: Props) {
   const pieData = counts.filter((b) => b.count > 0).map((b) => ({
     name: b.label,
     value: b.count,
-    color: b.color,
+    gradientId: b.gradientId,
   }));
 
   return (
@@ -73,26 +110,40 @@ export function UtilizationDistribution({ metrics, totalVms }: Props) {
           {/* donut */}
           <div className="relative shrink-0" style={{ width: 200, height: 200 }}>
             <PieChart width={200} height={200}>
+              <defs>
+                {BUCKETS.map((b) => (
+                  <linearGradient
+                    key={b.key}
+                    id={b.gradientId}
+                    x1="0"
+                    y1="0"
+                    x2="1"
+                    y2="1"
+                    gradientUnits="objectBoundingBox"
+                  >
+                    <stop offset="0%" stopColor={b.gradFrom} />
+                    <stop offset="100%" stopColor={b.gradTo} />
+                  </linearGradient>
+                ))}
+              </defs>
               <Pie
                 data={pieData}
                 cx={95}
                 cy={95}
-                innerRadius={50}
+                innerRadius={40}
                 outerRadius={80}
                 dataKey="value"
                 startAngle={90}
                 endAngle={-270}
-                strokeWidth={0}
+                paddingAngle={1}
+                cornerRadius={1}
               >
                 {pieData.map((d, i) => (
-                  <Cell key={i} fill={d.color} />
+                  <Cell key={i} fill={`url(#${d.gradientId})`} stroke="var(--color-card)" strokeWidth={1} />
                 ))}
               </Pie>
             </PieChart>
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-xl font-bold tabular-nums leading-none">{totalVms}</span>
-              <span className="text-[10px] text-muted-foreground leading-none mt-1">Total VMs</span>
-            </div>
+
           </div>
 
           {/* legend */}
@@ -100,13 +151,18 @@ export function UtilizationDistribution({ metrics, totalVms }: Props) {
             {counts.map((b) => {
               const pct = totalVms > 0 ? Math.round((b.count / totalVms) * 100) : 0;
               return (
-                <div key={b.label} className="flex items-center gap-2 text-xs">
-                  <span className="size-2 rounded-full shrink-0" style={{ background: b.color }} />
-                  <span className="text-muted-foreground truncate">{b.label}</span>
-                  <span className={`ml-auto font-semibold tabular-nums shrink-0 ${b.textClass}`}>
+                <div key={b.label} className="flex items-center gap-2 ">
+                  <span
+                    className="size-2 shrink-0 rounded-full"
+                    style={{
+                      background: `linear-gradient(135deg, ${b.gradFrom}, ${b.gradTo})`,
+                    }}
+                  />
+                  <p className="text-muted-foreground truncate">{b.label}</p>
+                  <p className={`ml-auto font-semibold tabular-nums shrink-0 ${b.textClass}`}>
                     {b.count}{" "}
-                    <span className="font-normal text-muted-foreground">({pct}%)</span>
-                  </span>
+                    <span className="font-normal text-muted-foreground">/ {pct}%</span>
+                  </p>
                 </div>
               );
             })}
@@ -114,14 +170,17 @@ export function UtilizationDistribution({ metrics, totalVms }: Props) {
         </div>
 
         {/* footer */}
-        <div className="flex items-center justify-between pt-1 border-t border-border/40">
+        <div className="flex items-center justify-between pt-2 border-t border-border/40">
           <span className="text-xs text-muted-foreground">High utilization VMs</span>
-          <Link
-            href="/admin/fleet?sort=cpuUsagePercent&dir=desc&status=running"
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          <Button
+            variant="ghost"
+            size="xs"
+            onClick={() => {
+              router.push("/admin/fleet?sort=cpuUsagePercent&dir=desc&status=running");
+            }}
           >
-            View all →
-          </Link>
+            View all
+          </Button>
         </div>
       </CardContent>
     </Card>

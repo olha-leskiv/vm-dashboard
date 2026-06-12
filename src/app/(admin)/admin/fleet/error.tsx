@@ -1,5 +1,7 @@
 "use client";
 
+import { ErrorRetryPanel } from "@/components/ui/error-retry-panel";
+
 export default function FleetError({
   error,
   reset,
@@ -8,15 +10,12 @@ export default function FleetError({
   reset: () => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
-      <p className="text-muted-foreground text-sm">Failed to load fleet data.</p>
-      <p className="text-xs text-muted-foreground/60 font-mono">{error.message}</p>
-      <button
-        onClick={reset}
-        className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground transition-colors"
-      >
-        Try again
-      </button>
-    </div>
+    <ErrorRetryPanel
+      variant="centered"
+      message="Failed to load fleet data."
+      error={error}
+      onRetry={reset}
+      retryLabel="Try again"
+    />
   );
 }

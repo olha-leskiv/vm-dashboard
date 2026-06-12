@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { VmStatusIconChip } from "@/components/overview/vm-status-icon-chip";
 import { VmDrawer } from "@/components/vm-drawer";
 import { utilizationColor } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
@@ -70,12 +71,15 @@ export function HotVmsTable({ rows }: Props) {
                 {rows.map(({ vm, ownerName, ownerId }) => (
                   <TableRow key={vm.id}>
                     <TableCell className="px-0">
-                      <button
-                        onClick={() => setSelectedVm(vm)}
-                        className="font-mono text-xs hover:text-foreground text-muted-foreground hover:underline underline-offset-2 transition-colors text-left"
-                      >
-                        {vm.name}
-                      </button>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <VmStatusIconChip status={vm.status} size="compact" />
+                        <button
+                          onClick={() => setSelectedVm(vm)}
+                          className="min-w-0 font-mono text-xs hover:text-foreground text-muted-foreground hover:underline underline-offset-2 transition-colors text-left"
+                        >
+                          {vm.name}
+                        </button>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <Link

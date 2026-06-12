@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatRelativeTime } from "@/lib/utils/format";
 import type { Alert } from "@/types";
+import { Button } from "@/components/ui/button";
 
 function SeverityIcon({ severity }: { severity: Alert["severity"] }) {
   if (severity === "critical") {
@@ -19,7 +20,7 @@ interface Props {
 export function ActionCenter({ alerts }: Props) {
   const criticalCount = alerts.filter((a) => a.severity === "critical").length;
   const warningCount = alerts.filter((a) => a.severity === "warning").length;
-  const displayed = alerts.slice(0, 5);
+  const displayed = alerts.slice(0, 3);
 
   return (
     <Card className="h-full">
@@ -76,12 +77,10 @@ export function ActionCenter({ alerts }: Props) {
 
         {/* footer actions */}
         <div className="flex items-center justify-between pt-3 mt-1 border-t border-border/40">
-          <button className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-            View All Alerts
-          </button>
-          <button className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+
+          <Button variant="outline" size="sm" >
             View All Events
-          </button>
+          </Button>
         </div>
       </CardContent>
     </Card>
