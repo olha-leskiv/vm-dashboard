@@ -45,6 +45,12 @@ export interface Policy {
   createdAt: string;
 }
 
+export interface VmMetricTrendPoint {
+  timestamp: string;
+  cpuPercent: number;
+  memoryPercent: number;
+}
+
 export interface UtilizationTrendPoint {
   timestamp: string;
   cpuPercent: number;

@@ -1,7 +1,7 @@
 "use client";
 
-import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getDeveloperMachines, restartMachine, stopMachine, cancelMachine } from "@/lib/api/developer";
+import { useSuspenseQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getDeveloperMachines, restartMachine, stopMachine, cancelMachine, getVmMetrics } from "@/lib/api/developer";
 import { getFleetOverview, getAllVms, getTemplates } from "@/lib/api/admin";
 import { queryKeys } from "./keys";
 
@@ -40,6 +40,14 @@ export function useCancelMachine() {
   return useMutation({
     mutationFn: cancelMachine,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.developer.machines() }),
+  });
+}
+
+export function useVmMetrics(vmId: string | null) {
+  return useQuery({
+    queryKey: queryKeys.vms.metrics(vmId ?? ""),
+    queryFn: () => getVmMetrics(vmId!),
+    enabled: !!vmId,
   });
 }
 

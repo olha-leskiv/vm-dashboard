@@ -3,7 +3,11 @@
 import { Separator } from "@/components/ui/separator";
 import { VmStatusBadge } from "@/components/vms/vm-status-badge";
 import { Button } from "@/components/ui/button";
-import { Pencil } from "lucide-react";
+import { Code2, RotateCcw, Square, Play, Loader2 } from "lucide-react";
+import { VmUtilizationChart } from "@/components/vms/vm-utilization-chart";
+import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { useRestartMachine, useStopMachine, useCancelMachine } from "@/lib/query/hooks";
 import {
   Sheet,
   SheetContent,
@@ -60,6 +64,48 @@ interface VmDrawerProps {
 
 export function VmDrawer({ vm, ownerName, onClose }: VmDrawerProps) {
   const template = vm ? TEMPLATE_MAP[vm.templateId] : null;
+  const restart = useRestartMachine();
+  const stop = useStopMachine();
+  const cancel = useCancelMachine();
+  const isPending = restart.isPending || stop.isPending || cancel.isPending;
+
+  const transitioning = vm?.status === "starting" || vm?.status === "stopping";
+  const [seconds, setSeconds] = useState(0);
+  useEffect(() => {
+    if (!transitioning) { setSeconds(0); return; }
+    setSeconds(0);
+    const id = setInterval(() => setSeconds((s) => s + 1), 1000);
+    return () => clearInterval(id);
+  }, [transitioning]);
+  const elapsed = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+
+  function handleOpenIde() {
+    toast.info("IDE launching", { description: "In the real product this would open your IDE in a new window." });
+  }
+
+  function handleRestart() {
+    if (!vm) return;
+    restart.mutate(vm.id, {
+      onSuccess: () => toast.success(`${vm.name} is restarting`, { description: "Will be ready in ~15 seconds." }),
+      onError: () => toast.error("Restart failed", { description: "Please try again." }),
+    });
+  }
+
+  function handleStop() {
+    if (!vm) return;
+    stop.mutate(vm.id, {
+      onSuccess: () => toast.success(`${vm.name} stopped`),
+      onError: () => toast.error("Stop failed", { description: "Please try again." }),
+    });
+  }
+
+  function handleCancel() {
+    if (!vm) return;
+    cancel.mutate(vm.id, {
+      onSuccess: () => toast.info(`${vm.name} start cancelled`),
+      onError: () => toast.error("Cancel failed", { description: "Please try again." }),
+    });
+  }
 
   return (
     <Sheet open={!!vm} onOpenChange={(open: boolean) => !open && onClose()}>
@@ -75,6 +121,50 @@ export function VmDrawer({ vm, ownerName, onClose }: VmDrawerProps) {
                 {vm.id}
               </SheetDescription>
             </SheetHeader>
+
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
+              {vm.status === "running" && (
+                <>
+                  <Button size="sm" className="flex-1 gap-2" onClick={handleOpenIde} disabled={isPending}>
+                    <Code2 className="size-4" />
+                    Open IDE
+                  </Button>
+                  <Button size="sm" variant="outline" className="gap-1.5" onClick={handleRestart} disabled={isPending}>
+                    <RotateCcw className="size-3.5" />
+                    Restart
+                  </Button>
+                  <Button size="sm" variant="outline" className="gap-1.5" onClick={handleStop} disabled={isPending}>
+                    <Square className="size-3 fill-destructive text-destructive" />
+                    Stop
+                  </Button>
+                </>
+              )}
+              {(vm.status === "stopped" || vm.status === "error") && (
+                <Button size="sm" variant="outline" className="flex-1 gap-2" onClick={handleRestart} disabled={isPending}>
+                  {vm.status === "error" ? <RotateCcw className="size-4" /> : <Play className="size-4" />}
+                  {vm.status === "error" ? "Restart" : "Start"}
+                </Button>
+              )}
+              {vm.status === "starting" && (
+                <>
+                  <Button size="sm" variant="outline" className="flex-1 gap-2" disabled>
+                    <Loader2 className="size-4 animate-spin shrink-0" />
+                    Starting…
+                    <span className="ml-auto font-mono text-xs tabular-nums text-muted-foreground">{elapsed}</span>
+                  </Button>
+                  <Button size="sm" variant="ghost" className="gap-1.5 text-muted-foreground" onClick={handleCancel} disabled={isPending}>
+                    Cancel
+                  </Button>
+                </>
+              )}
+              {vm.status === "stopping" && (
+                <Button size="sm" variant="outline" className="flex-1 gap-2" disabled>
+                  <Loader2 className="size-4 animate-spin shrink-0" />
+                  Stopping…
+                  <span className="ml-auto font-mono text-xs tabular-nums text-muted-foreground">{elapsed}</span>
+                </Button>
+              )}
+            </div>
 
             <div className="px-4 py-4 space-y-5">
               <section>
@@ -113,6 +203,15 @@ export function VmDrawer({ vm, ownerName, onClose }: VmDrawerProps) {
               <Separator />
 
               <section>
+                <h4 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-3">
+                  Usage — Last 24 h
+                </h4>
+                <VmUtilizationChart vmId={vm.id} />
+              </section>
+
+              <Separator />
+
+              <section>
                 <h4 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
                   Timeline
                 </h4>
@@ -131,12 +230,6 @@ export function VmDrawer({ vm, ownerName, onClose }: VmDrawerProps) {
               </section>
             </div>
 
-            <div className="px-4 pb-4 pt-2 mt-auto border-t border-border">
-              <Button size="sm" variant="outline" className="w-full gap-1.5">
-                <Pencil className="size-3.5" />
-                Edit VM
-              </Button>
-            </div>
           </>
         )}
       </SheetContent>

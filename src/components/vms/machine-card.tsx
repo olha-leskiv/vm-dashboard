@@ -8,13 +8,13 @@ import { MOCK_TEMPLATES } from "@/mocks/templates";
 import { formatRelativeTime, utilizationColor } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 import { useRestartMachine, useStopMachine, useCancelMachine } from "@/lib/query/hooks";
+import { VmDrawer } from "@/components/vm-drawer";
 import { toast } from "sonner";
 import {
   Terminal,
   Cpu,
   MemoryStick,
   HardDrive,
-  ChevronRight,
   Clock,
   Activity,
   Code2,
@@ -204,6 +204,8 @@ export function MachineCard({ vm }: { vm: VM }) {
   const transitioning = vm.status === "starting" || vm.status === "stopping";
   const elapsed = useElapsed(transitioning);
 
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   function handleOpenIde() {
     toast.info("IDE launching", {
       description: "In the real product this would open your IDE in a new window.",
@@ -232,6 +234,7 @@ export function MachineCard({ vm }: { vm: VM }) {
   }
 
   return (
+    <>
     <Card>
       <CardContent className="p-5 space-y-4">
 
@@ -245,6 +248,14 @@ export function MachineCard({ vm }: { vm: VM }) {
             <p className="text-xs text-muted-foreground font-mono">ID: {vm.id}</p>
           </div>
           <StatusBadge status={vm.status} />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8 shrink-0 text-muted-foreground hover:text-foreground -mr-1"
+            onClick={() => setDrawerOpen(true)}
+          >
+            <Info className="size-4" />
+          </Button>
         </div>
 
         {/* specs */}
@@ -308,5 +319,8 @@ export function MachineCard({ vm }: { vm: VM }) {
         />
       </CardContent>
     </Card>
+
+    <VmDrawer vm={drawerOpen ? vm : null} ownerName={null} onClose={() => setDrawerOpen(false)} />
+    </>
   );
 }
