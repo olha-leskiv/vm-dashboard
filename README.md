@@ -9,7 +9,9 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Choose a role on the sign-in page:
+**Live preview:** [vm-dashboard-eight.vercel.app](https://vm-dashboard-eight.vercel.app/sign-in)
+
+Or run locally and open [http://localhost:3000](http://localhost:3000). Choose a role on the sign-in page:
 
 - **Engineer** — your personal machines (3 demo VMs)
 - **Admin** — full fleet overview and management tools
