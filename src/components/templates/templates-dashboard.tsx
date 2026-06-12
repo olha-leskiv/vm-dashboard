@@ -17,8 +17,8 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { PageHeader } from "@/components/layout/page-header";
+import { TemplateCard } from "@/components/templates/template-card";
 import type { VMTemplate } from "@/types";
-import { cn } from "@/lib/utils";
 
 // ─── form types ───────────────────────────────────────────────────────────────
 
@@ -161,98 +161,6 @@ function FormField({
       </label>
       {children}
       {error && <p className="text-xs text-destructive">{error}</p>}
-    </div>
-  );
-}
-
-// ─── spec chip ────────────────────────────────────────────────────────────────
-
-function Spec({
-  icon: Icon,
-  label,
-}: {
-  icon: React.ElementType;
-  label: string;
-}) {
-  return (
-    <span className="flex items-center gap-1 text-xs text-muted-foreground">
-      <Icon className="size-3 shrink-0" />
-      {label}
-    </span>
-  );
-}
-
-// ─── template card ────────────────────────────────────────────────────────────
-
-const MAX_VISIBLE_TOOLS = 4;
-
-interface TemplateCardProps {
-  template: VMTemplate;
-  onView: () => void;
-  onEdit: () => void;
-}
-
-function TemplateCard({ template, onView, onEdit }: TemplateCardProps) {
-  const visibleTools = template.preinstalledTools.slice(0, MAX_VISIBLE_TOOLS);
-  const overflow = template.preinstalledTools.length - MAX_VISIBLE_TOOLS;
-
-  return (
-    <div
-      onClick={onView}
-      className="group relative flex flex-col rounded-xl border border-border bg-card ring-1 ring-foreground/10 cursor-pointer hover:border-foreground/20 hover:ring-foreground/20 transition-all p-4 gap-3"
-    >
-      {/* edit button */}
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onEdit();
-        }}
-        className="absolute top-3 right-3 p-1.5 rounded-md text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-muted hover:text-foreground transition-all"
-      >
-        <Pencil className="size-3.5" />
-      </button>
-
-      {/* name + description */}
-      <div className="pr-7">
-        <h3 className="leading-snug">{template.name}</h3>
-        {template.description && (
-          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-            {template.description}
-          </p>
-        )}
-      </div>
-
-      <Separator />
-
-      {/* base image */}
-      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Server className="size-3.5 shrink-0" />
-        <span className="font-mono">{template.baseImage}</span>
-      </div>
-
-      {/* hardware specs */}
-      <div className="flex flex-wrap gap-x-4 gap-y-1">
-        <Spec icon={Cpu} label={`${template.vCpu} vCPU`} />
-        <Spec icon={MemoryStick} label={`${template.memoryGb} GB RAM`} />
-        <Spec icon={HardDrive} label={`${template.diskSizeGb} GB disk`} />
-      </div>
-
-      {/* tools */}
-      {template.preinstalledTools.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {visibleTools.map((tool) => (
-            <Badge key={tool} variant="secondary" className="font-mono text-[11px] px-1.5 py-0 h-5">
-              {tool}
-            </Badge>
-          ))}
-          {overflow > 0 && (
-            <Badge variant="secondary" className="text-[11px] px-1.5 py-0 h-5 text-muted-foreground">
-              +{overflow} more
-            </Badge>
-          )}
-        </div>
-      )}
     </div>
   );
 }
