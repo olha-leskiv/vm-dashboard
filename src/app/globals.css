@@ -93,8 +93,8 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  /* ~Tailwind red-500 (#ef4444) */
-  --primary: oklch(0.637 0.237 25.331);
+
+  --primary: oklch(57.7% 0.245 27.325);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
@@ -131,7 +131,7 @@
     /* Dot grid: PNG was 1536×1024 — scaling it to 24px crushed the dots. Use CSS so dots stay visible in light/dark. */
     background-image: radial-gradient(
       circle at center,
-      color-mix(in oklch, var(--foreground) 12%, transparent) 1px,
+      color-mix(in oklch, var(--foreground) 6%, transparent) 1px,
       transparent 1.6px
     );
     background-size: 22px 22px;

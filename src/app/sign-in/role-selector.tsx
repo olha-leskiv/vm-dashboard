@@ -11,14 +11,14 @@ const ROLES: { value: Role; label: string; description: string; icon: LucideIcon
 
   {
     value: "admin",
-    label: "Admin",
+    label: "Sign in as Admin",
     description: "Monitor fleet health and manage infrastructure",
     icon: ShieldCheck,
   },
 
   {
     value: "engineer",
-    label: "Engineer",
+    label: "Sign in as Engineer",
     description: "Access and manage your developer machines",
     icon: Code2,
   },
@@ -48,7 +48,7 @@ export function RoleSelector() {
               <role.icon className="mt-0.5 size-5 shrink-0 text-muted-foreground" aria-hidden />
               <div className="min-w-0 text-left">
                 <div className="font-medium">{role.label}</div>
-                <small className="mt-0.5 block text-muted-foreground">{role.description}</small>
+
               </div>
             </div>
             {pending && active === role.value ? (
