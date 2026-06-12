@@ -1,6 +1,7 @@
 # Ascendra Workspaces
+<img width="1265" height="695" alt="image" src="https://github.com/user-attachments/assets/e3c7c4cc-c606-44a5-9416-df3046e9a084" />
 
-Developer machine management dashboard — take-home assignment for the Product Design Engineer role.
+Virtual machine management dashboard.
 
 ## Running locally
 
