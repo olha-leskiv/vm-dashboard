@@ -1,11 +1,14 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { MOCK_TEMPLATES } from "@/mocks/templates";
 import { formatRelativeTime, utilizationColor } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
+import { useRestartMachine, useStopMachine, useCancelMachine } from "@/lib/query/hooks";
+import { toast } from "sonner";
 import {
   Terminal,
   Cpu,
@@ -19,8 +22,26 @@ import {
   Square,
   Play,
   Info,
+  Loader2,
 } from "lucide-react";
 import type { VM, VMStatus, VMTemplate } from "@/types";
+
+// ─── elapsed counter hook ────────────────────────────────────────────────────
+
+function useElapsed(active: boolean): string {
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    if (!active) { setSeconds(0); return; }
+    setSeconds(0);
+    const id = setInterval(() => setSeconds((s) => s + 1), 1000);
+    return () => clearInterval(id);
+  }, [active]);
+
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -98,58 +119,73 @@ function ResourceRow({ icon: Icon, label, value }: { icon: React.ElementType; la
 
 // ─── actions ──────────────────────────────────────────────────────────────────
 
-function Actions({ status }: { status: VMStatus }) {
+interface ActionsProps {
+  status: VMStatus;
+  elapsed: string;
+  onOpenIde: () => void;
+  onRestart: () => void;
+  onStop: () => void;
+  onCancel: () => void;
+  isPending: boolean;
+}
+
+function Actions({ status, elapsed, onOpenIde, onRestart, onStop, onCancel, isPending }: ActionsProps) {
   const running = status === "running";
   const stopped = status === "stopped";
   const errored = status === "error";
-  const busy = status === "starting" || status === "stopping";
+  const starting = status === "starting";
+  const stopping = status === "stopping";
 
   return (
     <div className="flex items-center gap-2">
       {/* primary CTA */}
       {running && (
-        <Button className="flex-1 gap-2" >
+        <Button className="flex-1 gap-2" onClick={onOpenIde} disabled={isPending}>
           <Code2 className="size-4" />
           Open IDE
         </Button>
       )}
-      {stopped && (
-        <Button variant="outline" className="flex-1 gap-2" >
-          <Play className="size-4" />
-          Start
+      {(stopped || errored) && (
+        <Button variant="outline" className="flex-1 gap-2" onClick={onRestart} disabled={isPending}>
+          {errored ? <RotateCcw className="size-4" /> : <Play className="size-4" />}
+          {errored ? "Restart" : "Start"}
         </Button>
       )}
-      {errored && (
-        <Button variant="outline" className="flex-1 gap-2" >
-          <RotateCcw className="size-4" />
-          Restart
-        </Button>
+      {starting && (
+        <>
+          <Button variant="outline" className="flex-1 gap-2" disabled>
+            <Loader2 className="size-4 animate-spin shrink-0" />
+            Starting…
+            <span className="ml-auto font-mono text-xs tabular-nums text-muted-foreground">{elapsed}</span>
+          </Button>
+          <Button variant="ghost" className="gap-1.5 text-muted-foreground" onClick={onCancel} disabled={isPending}>
+            Cancel
+          </Button>
+        </>
       )}
-      {busy && (
+      {stopping && (
         <Button variant="outline" className="flex-1 gap-2" disabled>
-          <span className="size-1.5 rounded-full bg-current animate-pulse shrink-0" />
-          {status === "starting" ? "Starting…" : "Stopping…"}
+          <Loader2 className="size-4 animate-spin shrink-0" />
+          Stopping…
+          <span className="ml-auto font-mono text-xs tabular-nums text-muted-foreground">{elapsed}</span>
         </Button>
       )}
 
       {/* secondary controls */}
       {running && (
         <>
-          <Button variant="outline" className="gap-1.5">
+          <Button variant="outline" className="gap-1.5" onClick={onRestart} disabled={isPending}>
             <RotateCcw className="size-3.5" />
             Restart
           </Button>
-          <Button variant="outline" className="gap-1.5">
+          <Button variant="outline" className="gap-1.5" onClick={onStop} disabled={isPending}>
             <Square className="size-3 fill-destructive text-destructive" />
             Stop
           </Button>
         </>
       )}
 
-      {/* view details — always available */}
-      <Button variant="ghost" size="icon" className="shrink-0 text-muted-foreground">
-        <Info className="size-4" />
-      </Button>
+
     </div>
   );
 }
@@ -159,6 +195,41 @@ function Actions({ status }: { status: VMStatus }) {
 export function MachineCard({ vm }: { vm: VM }) {
   const template = getTemplate(vm.templateId);
   const uptime = formatUptime(vm.startedAt, vm.status);
+
+  const restart = useRestartMachine();
+  const stop = useStopMachine();
+  const cancel = useCancelMachine();
+  const isPending = restart.isPending || stop.isPending || cancel.isPending;
+
+  const transitioning = vm.status === "starting" || vm.status === "stopping";
+  const elapsed = useElapsed(transitioning);
+
+  function handleOpenIde() {
+    toast.info("IDE launching", {
+      description: "In the real product this would open your IDE in a new window.",
+    });
+  }
+
+  function handleRestart() {
+    restart.mutate(vm.id, {
+      onSuccess: () => toast.success(`${vm.name} is restarting`, { description: "Will be ready in ~15 seconds." }),
+      onError: () => toast.error("Restart failed", { description: "Please try again." }),
+    });
+  }
+
+  function handleStop() {
+    stop.mutate(vm.id, {
+      onSuccess: () => toast.success(`${vm.name} stopped`),
+      onError: () => toast.error("Stop failed", { description: "Please try again." }),
+    });
+  }
+
+  function handleCancel() {
+    cancel.mutate(vm.id, {
+      onSuccess: () => toast.info(`${vm.name} start cancelled`),
+      onError: () => toast.error("Cancel failed", { description: "Please try again." }),
+    });
+  }
 
   return (
     <Card>
@@ -226,7 +297,15 @@ export function MachineCard({ vm }: { vm: VM }) {
         <Separator />
 
         {/* actions */}
-        <Actions status={vm.status} />
+        <Actions
+          status={vm.status}
+          elapsed={elapsed}
+          onOpenIde={handleOpenIde}
+          onRestart={handleRestart}
+          onStop={handleStop}
+          onCancel={handleCancel}
+          isPending={isPending}
+        />
       </CardContent>
     </Card>
   );

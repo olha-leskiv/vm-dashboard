@@ -1,7 +1,7 @@
 "use client";
 
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { getDeveloperMachines } from "@/lib/api/developer";
+import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getDeveloperMachines, restartMachine, stopMachine, cancelMachine } from "@/lib/api/developer";
 import { getFleetOverview, getAllVms, getTemplates } from "@/lib/api/admin";
 import { queryKeys } from "./keys";
 
@@ -9,6 +9,37 @@ export function useDeveloperMachines() {
   return useSuspenseQuery({
     queryKey: queryKeys.developer.machines(),
     queryFn: getDeveloperMachines,
+    refetchInterval: (query) => {
+      const vms = query.state.data?.data ?? [];
+      const transitioning = vms.some(
+        (vm) => vm.status === "starting" || vm.status === "stopping"
+      );
+      return transitioning ? 3_000 : false;
+    },
+  });
+}
+
+export function useRestartMachine() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: restartMachine,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.developer.machines() }),
+  });
+}
+
+export function useStopMachine() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: stopMachine,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.developer.machines() }),
+  });
+}
+
+export function useCancelMachine() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: cancelMachine,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.developer.machines() }),
   });
 }
 

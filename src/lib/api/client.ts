@@ -19,10 +19,9 @@ function resolveUrl(path: string): string {
   return `${base}${path}`;
 }
 
-export async function apiFetch<T>(path: string): Promise<T> {
+export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const url = resolveUrl(path);
-  console.log("[apiFetch] requesting", url);
-  const response = await fetch(url, { cache: "no-store" });
+  const response = await fetch(url, { cache: "no-store", ...init });
   if (!response.ok) {
     throw new ApiError(
       response.status,
