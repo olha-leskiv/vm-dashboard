@@ -9,6 +9,7 @@ import { VmStatusIconChip } from "@/components/overview/vm-status-icon-chip";
 import { Button } from "@/components/ui/button";
 import { VmDrawer } from "@/components/vm-drawer";
 import { formatRelativeTime } from "@/lib/utils/format";
+import { EmptyState } from "@/components/ui/empty-state";
 import type { VM } from "@/types";
 
 interface IdleVmRow {
@@ -36,9 +37,7 @@ export function IdleVmsTable({ rows }: Props) {
         </CardHeader>
         <CardContent className="flex flex-col gap-0">
           {rows.length === 0 ? (
-            <p className="text-muted-foreground text-sm py-4 text-center">
-              No running VMs with last activity older than 14 days.
-            </p>
+            <EmptyState message="No idle VMs." description="No running machines have been inactive for 14+ days." />
           ) : (
             <Table>
               <TableHeader>

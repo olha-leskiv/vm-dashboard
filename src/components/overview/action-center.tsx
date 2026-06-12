@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { formatRelativeTime } from "@/lib/utils/format";
 import type { Alert } from "@/types";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 
 function SeverityIcon({ severity }: { severity: Alert["severity"] }) {
   if (severity === "critical") {
@@ -54,7 +55,7 @@ export function ActionCenter({ alerts }: Props) {
 
       <CardContent className="flex flex-col gap-0">
         {displayed.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-6 text-center">No active alerts.</p>
+          <EmptyState message="No active alerts." description="The fleet is healthy." />
         ) : (
           <div>
             {displayed.map((alert) => (

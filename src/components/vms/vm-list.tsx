@@ -2,6 +2,7 @@
 
 import { MachineCard } from "@/components/vms/machine-card";
 import { useDeveloperMachines } from "@/lib/query/hooks";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export function MachinesList() {
   const { data } = useDeveloperMachines();
@@ -9,7 +10,11 @@ export function MachinesList() {
 
   if (vms.length === 0) {
     return (
-      <p className="text-muted-foreground text-sm py-12 text-center">No machines found.</p>
+      <EmptyState
+        message="No machines found."
+        description="You don't have any virtual machines assigned yet."
+        className="py-12"
+      />
     );
   }
 

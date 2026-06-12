@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/sheet";
 import { PageHeader } from "@/components/layout/page-header";
 import { TemplateCard } from "@/components/templates/template-card";
+import { EmptyState } from "@/components/ui/empty-state";
 import type { VMTemplate } from "@/types";
 
 // ─── schema ───────────────────────────────────────────────────────────────────
@@ -495,13 +496,17 @@ export function TemplatesDashboard() {
         />
 
         {templates.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 rounded-xl border border-dashed border-border text-center">
-            <p className="text-muted-foreground text-sm">No templates yet.</p>
-            <Button size="sm" variant="outline" onClick={openCreate} className="gap-1.5">
-              <Plus className="size-3.5" />
-              Create the first template
-            </Button>
-          </div>
+          <EmptyState
+            message="No templates yet."
+            description="Create a template to define the hardware and tools available to developers."
+            bordered
+            action={
+              <Button size="sm" variant="outline" onClick={openCreate} className="gap-1.5">
+                <Plus className="size-3.5" />
+                Create the first template
+              </Button>
+            }
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {templates.map((t) => (

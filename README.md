@@ -62,6 +62,8 @@ The admin dashboard needs a second pass — I'd re-evaluate each card and ask wh
 
 Code cleanup and Storybook for component management would improve maintainability.
 
+Known gaps: fleet utilization chart lack a full data table alternative for screen reader users; ARIA live regions for VM status changes are not yet implemented.
+
 But the most important next step: **usability testing with real users.** Everything here is an assumption. I'd recruit 5 real engineers and admins, run task-based sessions, and follow up with short interviews. The design should be validated against actual behavior, not just good intentions.
 
 ---
@@ -70,26 +72,21 @@ But the most important next step: **usability testing with real users.** Everyth
 
 The app has been audited against WCAG 2.2 AA. Fixes applied:
 
-- Active nav links marked with `aria-current="page"`
-- All icon-only buttons have `aria-label`
-- Clickable non-button elements (template cards) have `role="button"`, `tabIndex`, and keyboard handlers
-- SVG charts wrapped in `role="img"` with descriptive labels
-- Required form fields carry `aria-required="true"`; visual asterisks are `aria-hidden`
-- Section headings in drawers use correct hierarchy (`h3` under the sheet title)
-- Info tooltip triggers have `aria-label`
 
-Known gaps: charts lack a full data table alternative for screen reader users; ARIA live regions for VM status changes are not yet implemented.
 
 ---
 
 ## Stack
 
-| | |
-|---|---|
-| Framework | Next.js App Router |
-| Language | TypeScript |
-| Styling | Tailwind CSS v4 |
-| Components | shadcn/ui |
-| Data fetching | TanStack Query v5 |
-| Charts | Recharts v3 |
-| Forms | react-hook-form + Zod |
+
+|               |                       |
+| ------------- | --------------------- |
+| Framework     | Next.js App Router    |
+| Language      | TypeScript            |
+| Styling       | Tailwind CSS v4       |
+| Components    | shadcn/ui             |
+| Data fetching | TanStack Query v5     |
+| Charts        | Recharts v3           |
+| Forms         | react-hook-form + Zod |
+
+

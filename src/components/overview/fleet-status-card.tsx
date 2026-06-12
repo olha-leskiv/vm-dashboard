@@ -5,6 +5,7 @@ import { PieChart, Pie, Cell } from "recharts";
 import { VmStatusIconChip } from "@/components/overview/vm-status-icon-chip";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface Props {
   totalVms: number;
@@ -65,6 +66,9 @@ export function FleetStatusCard({ totalVms, runningVms, startingVms, stoppedVms 
         </div>
       </CardHeader>
       <CardContent className="flex items-center gap-8">
+        {totalVms === 0 ? (
+          <EmptyState message="No virtual machines in the fleet." className="flex-1" />
+        ) : (<>
         {/* donut */}
         <div role="img" aria-label={`Donut chart: ${runningVms} running, ${startingVms} starting, ${stoppedVms} stopped out of ${totalVms} total VMs`} className="relative shrink-0" style={{ width: 160, height: 160 }}>
           <PieChart width={160} height={160}>
@@ -125,6 +129,7 @@ export function FleetStatusCard({ totalVms, runningVms, startingVms, stoppedVms 
             </div>
           ))}
         </div>
+        </>)}
       </CardContent>
     </Card>
   );

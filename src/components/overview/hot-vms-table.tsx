@@ -10,6 +10,7 @@ import { VmStatusIconChip } from "@/components/overview/vm-status-icon-chip";
 import { VmDrawer } from "@/components/vm-drawer";
 import { utilizationColor } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
+import { EmptyState } from "@/components/ui/empty-state";
 import type { VM } from "@/types";
 
 function CpuBar({ value }: { value: number }) {
@@ -52,7 +53,7 @@ export function HotVmsTable({ rows }: Props) {
         </CardHeader>
         <CardContent className="flex flex-col gap-0">
           {rows.length === 0 ? (
-            <p className="text-muted-foreground text-sm py-4 text-center">No hot VMs.</p>
+            <EmptyState message="No hot VMs." description="All VMs are running within normal CPU thresholds." />
           ) : (
             <Table>
               <TableHeader>

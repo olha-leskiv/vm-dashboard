@@ -14,6 +14,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tooltip as UITooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { EmptyState } from "@/components/ui/empty-state";
 import type { UtilizationTrendPoint } from "@/types";
 
 type Period = "live" | "1h" | "24h" | "7d" | "30d" | "365d";
@@ -108,9 +109,7 @@ export function UtilizationChart({ trend }: { trend: UtilizationTrendPoint[] }) 
       </CardHeader>
       <CardContent>
         {data.length === 0 ? (
-          <div className="h-48 flex items-center justify-center text-muted-foreground text-sm">
-            No data for this period.
-          </div>
+          <EmptyState message="No data for this period." className="h-48" />
         ) : (
           <div role="img" aria-label={`Fleet utilization chart showing CPU and memory usage over time`}>
           <ResponsiveContainer width="100%" height={200}>
