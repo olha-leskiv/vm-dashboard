@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Info } from "lucide-react";
 import { PieChart, Pie, Cell } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface VmMetric {
   cpu: number;
@@ -46,7 +48,15 @@ export function UtilizationDistribution({ metrics, totalVms }: Props) {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between gap-4">
-          <CardTitle>Utilization Distribution</CardTitle>
+          <div className="flex items-center gap-1.5">
+            <CardTitle>Utilization Distribution</CardTitle>
+            <Tooltip>
+              <TooltipTrigger>
+                <Info className="size-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent>Breakdown of VMs by resource utilization bucket</TooltipContent>
+            </Tooltip>
+          </div>
           <div className="flex gap-1">
             <Button size="xs" variant={mode === "cpu" ? "secondary" : "ghost"} onClick={() => setMode("cpu")}>
               CPU

@@ -1,7 +1,9 @@
 "use client";
 
+import { Info } from "lucide-react";
 import { PieChart, Pie, Cell } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Props {
   totalVms: number;
@@ -25,7 +27,15 @@ export function FleetStatusCard({ totalVms, runningVms, startingVms, stoppedVms 
   return (
     <Card size="sm" className="min-w-0">
       <CardHeader>
-        <CardTitle>VM Fleet</CardTitle>
+        <div className="flex items-center gap-1.5">
+          <CardTitle>VM Fleet</CardTitle>
+          <Tooltip>
+            <TooltipTrigger>
+              <Info className="size-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>Distribution of all VMs by current status</TooltipContent>
+          </Tooltip>
+        </div>
       </CardHeader>
       <CardContent className="flex items-center gap-8">
         {/* donut */}

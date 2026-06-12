@@ -1,6 +1,7 @@
-import { AlertCircle, AlertTriangle } from "lucide-react";
+import { AlertCircle, AlertTriangle, Info } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatRelativeTime } from "@/lib/utils/format";
 import type { Alert } from "@/mocks/alerts";
 
@@ -24,7 +25,15 @@ export function ActionCenter({ alerts }: Props) {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <CardTitle>Action Center</CardTitle>
+          <div className="flex items-center gap-1.5">
+            <CardTitle>Action Center</CardTitle>
+            <Tooltip>
+              <TooltipTrigger>
+                <Info className="size-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent>Active alerts requiring admin attention</TooltipContent>
+            </Tooltip>
+          </div>
           <div className="flex items-center gap-1.5">
             {criticalCount > 0 && (
               <Badge variant="outline" className="text-[10px] h-5 px-1.5 bg-destructive/10 text-destructive border-destructive/20 gap-1">

@@ -1,5 +1,6 @@
 "use client";
 
+import { Info } from "lucide-react";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -10,6 +11,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tooltip as UITooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { UtilizationTrendPoint } from "@/types";
 
 function formatHour(iso: string): string {
@@ -47,7 +49,15 @@ export function RunningVmsChart({ trend }: { trend: UtilizationTrendPoint[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Running VMs Over Time</CardTitle>
+        <div className="flex items-center gap-1.5">
+          <CardTitle>Running VMs Over Time</CardTitle>
+          <UITooltip>
+            <TooltipTrigger>
+              <Info className="size-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>Count of running VMs sampled over the selected time period</TooltipContent>
+          </UITooltip>
+        </div>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={200}>

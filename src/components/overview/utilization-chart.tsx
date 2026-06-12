@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Info } from "lucide-react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -12,6 +13,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tooltip as UITooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { UtilizationTrendPoint } from "@/types";
 
 type Period = "live" | "24h" | "30d";
@@ -68,7 +70,15 @@ export function UtilizationChart({ trend }: { trend: UtilizationTrendPoint[] }) 
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between gap-4 flex-wrap">
-          <CardTitle>Fleet Utilization</CardTitle>
+          <div className="flex items-center gap-1.5">
+            <CardTitle>Fleet Utilization</CardTitle>
+            <UITooltip>
+              <TooltipTrigger>
+                <Info className="size-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent>Average CPU and memory usage across running VMs</TooltipContent>
+            </UITooltip>
+          </div>
           <div className="flex gap-1">
             {(["live", "24h", "30d"] as Period[]).map((p) => (
               <Button

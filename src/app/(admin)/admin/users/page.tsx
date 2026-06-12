@@ -1,7 +1,9 @@
+import { Info } from "lucide-react";
 import { MOCK_USERS } from "@/mocks/users";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 const ROLE_STYLES = {
@@ -21,7 +23,15 @@ export default function AdminUsersPage() {
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">All users</CardTitle>
+          <div className="flex items-center gap-1.5">
+            <CardTitle className="text-base">All users</CardTitle>
+            <Tooltip>
+              <TooltipTrigger>
+                <Info className="size-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent>All workspace members and their assigned VMs</TooltipContent>
+            </Tooltip>
+          </div>
         </CardHeader>
         <CardContent className="pt-0">
           <div className="rounded-md border overflow-x-auto max-h-[min(70vh,720px)] overflow-y-auto">
