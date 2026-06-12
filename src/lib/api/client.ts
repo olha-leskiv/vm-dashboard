@@ -1,9 +1,8 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
-
 export class ApiError extends Error {
   constructor(
     public readonly status: number,
     message: string,
+    public readonly url?: string,
   ) {
     super(message);
     this.name = "ApiError";
@@ -11,9 +10,14 @@ export class ApiError extends Error {
 }
 
 export async function apiFetch<T>(path: string): Promise<T> {
-  const response = await fetch(`${BASE_URL}${path}`, { cache: "no-store" });
+  console.log("[apiFetch] requesting", path);
+  const response = await fetch(path, { cache: "no-store" });
   if (!response.ok) {
-    throw new ApiError(response.status, `${response.status} ${response.statusText}`);
+    throw new ApiError(
+      response.status,
+      `${response.status} ${response.statusText} — ${path}`,
+      path,
+    );
   }
   return response.json() as Promise<T>;
 }
