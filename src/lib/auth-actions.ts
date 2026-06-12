@@ -4,8 +4,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 const ROLE_USERS: Record<"engineer" | "admin", string> = {
-  engineer: "usr-001", // Alice Chen
-  admin: "usr-003", // Carol Singh
+  admin: "usr-001",    // Alice Chen — role: "admin" in MOCK_USERS (i=0, 0%14===0)
+  engineer: "usr-003", // Carlos Singh — role: "engineer" in MOCK_USERS (i=2)
 };
 
 export async function signIn(role: "engineer" | "admin") {
