@@ -39,7 +39,7 @@ I started by researching:
 - The responsibilities of DevOps and DevEx administrators
 - Common infrastructure management dashboards and the information they surface
 
-Figma research board with a couple of references:
+Figma board with a couple of references:
 https://www.figma.com/board/9Se0qBrXQj5EXnhRPA5eDe/Untitled?node-id=0-1&t=uhJrmffSqenqEicf-1
 
 ### Engineer persona
@@ -75,23 +75,25 @@ This led me to prioritize fleet health, utilization, idle resources, and cost vi
 
 Several important product decisions were not explicitly defined in the brief, so I made a number of assumptions to create a coherent experience:
 
-- Engineers manage and use machines but do not manage templates, policies, or quotas.
+- Engineers manage and use machines but do not allowed to manage templates, policies, or quotas.
 - Admins can also act as engineers when needed and may occasionally need access to developer workflows.
 - Fleet-wide visibility, utilization, and cost monitoring are higher-priority admin concerns than deep analytics for individual machines.
-- Operational issues should be surfaced proactively, which led to the addition of an Action Center on the admin dashboard.
+- Operational issues should be surfaced proactively, which led to the addition of an Action Center, Idle Machines and other cards, highligtning problems on the inventory page.
 - The admin and engineer experiences should be clearly separated because their goals, workflows, and information needs are significantly different.
 
 Rather than attempting to support every possible interpretation of the brief, I documented these assumptions and optimized for clarity and usability.
 
 ## What I'd validate with real users
 
-Everything above is an assumption. The most important next step would be recruiting 5 real engineers and admins, running task-based sessions, and following up with short interviews. The design should be validated against actual behavior, not just good intentions.
+I consider my solution as an assuption to test. This is an MVP prototype that can be changed drastically throught iterations. The most important next step would be recruiting 5 real engineers and admins, running user-testing sessions, and following up with short interviews. The design should be validated against actual behavior, not just good intentions.
 
 ---
 
 ## Key implementation decisions
 
 **Parallel routing on the admin overview.** Each dashboard card (KPIs, cost, utilization, hot VMs, idle VMs) loads and fails independently. A slow chart doesn't block the rest of the page.
+
+**Admin overview as a diagnostic surface.** The overview page is not a collection of random widgets — each card answers a specific question an admin would ask when opening the dashboard cold. KPIs give an instant fleet-wide snapshot (how many machines, how many running, total cost). The Utilization chart shows whether the fleet is over- or under-provisioned over time. Running VMs surfaces the busiest machines so overloaded resources are visible immediately. Hot VMs and Idle VMs together answer the two most actionable infrastructure questions: what needs attention right now, and what is silently wasting money. Cost gives a financial summary without digging through individual machines. Together these cards let an admin diagnose the health of the entire fleet in a single glance without navigating anywhere.
 
 **Action Center on the admin overview.** Admins managing infrastructure expect a single place to see what needs their attention right now. The Action Center surfaces active alerts grouped by severity so nothing critical gets buried in the fleet table. This wasn't explicitly requested in the brief, but emerged naturally from the responsibilities of the admin persona during the discovery phase.
 
@@ -117,7 +119,7 @@ Code cleanup and Storybook for component management would improve maintainabilit
 
 ## Accessibility
 
-The app has been audited against WCAG 2.2 AA. Fixes applied:
+The app has been audited against WCAG 2.2 AA.
 
 ---
 
