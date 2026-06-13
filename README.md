@@ -2,7 +2,7 @@
 
 Virtual machine management dashboard.
 
-<img width="1265" height="695" alt="image" src="https://github.com/user-attachments/assets/e3c7c4cc-c606-44a5-9416-df3046e9a084" />
+<img width="950" height="494" alt="image" src="https://github.com/user-attachments/assets/18d18187-679a-428d-959b-ee4971cf9666" />
 
 ## Running locally
 
