@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getQueryClient } from "@/lib/query/get-query-client";
-import { getDeveloperMachines } from "@/lib/api/developer";
+import { getDeveloperMachinesDirect } from "@/lib/api/developer-server";
 import { queryKeys } from "@/lib/query/keys";
 import { MachinesList } from "@/components/vms/vm-list";
 import { PageHeader } from "@/components/layout/page-header";
@@ -10,7 +10,7 @@ export default async function DeveloperMachinesPage() {
   const queryClient = getQueryClient();
   await queryClient.prefetchQuery({
     queryKey: queryKeys.developer.machines(),
-    queryFn: getDeveloperMachines,
+    queryFn: getDeveloperMachinesDirect,
   });
 
   return (

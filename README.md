@@ -1,7 +1,8 @@
 # Ascendra Workspaces
-<img width="1265" height="695" alt="image" src="https://github.com/user-attachments/assets/e3c7c4cc-c606-44a5-9416-df3046e9a084" />
 
 Virtual machine management dashboard.
+
+<img width="1265" height="695" alt="image" src="https://github.com/user-attachments/assets/e3c7c4cc-c606-44a5-9416-df3046e9a084" />
 
 ## Running locally
 
@@ -14,10 +15,10 @@ npm run dev
 
 Or run locally and open [http://localhost:3000](http://localhost:3000). Choose a role on the sign-in page:
 
-- **Engineer** — your personal machines (3 demo VMs)
+- **Engineer** — your personal machines
 - **Admin** — full fleet overview and management tools
 
-No real auth. Role stored in a cookie; sign out returns to sign-in.
+No real auth right now. Role stored in a cookie; sign out returns to sign-in.
 
 ---
 
